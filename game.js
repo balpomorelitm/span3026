@@ -85,8 +85,8 @@ function initializeMap() {
         opacity: 0.3
     }).addTo(map);
 
-    // Load and add GeoJSON for countries and Spanish regions
-    loadGeoJSONData();
+// Load and add GeoJSON for countries and Spanish regions
+loadGeoJSONData();
 }
 
 async function loadGeoJSONData() {
@@ -131,6 +131,9 @@ async function loadGeoJSONData() {
         // Add Spanish regions as simplified overlays
         addSpanishRegions();
 
+        // Add custom Caribbean coastal zones overlays
+        addCaribbeanCoastalZones();
+
     } catch (error) {
         console.error('Error loading map data:', error);
     }
@@ -152,6 +155,12 @@ function addSpanishRegions() {
     // In production, load actual region boundaries
     const spainLayer = mapLayers['ES'];
     if (spainLayer) {
+        if (!map.getPane('spanishRegions')) {
+            map.createPane('spanishRegions');
+            map.getPane('spanishRegions').style.zIndex = 650;
+            map.getPane('spanishRegions').style.pointerEvents = 'auto';
+        }
+
         // Create clickable zones for Spanish regions
         // This is a simplified version - ideally load real region GeoJSON
         const regions = [
@@ -164,6 +173,7 @@ function addSpanishRegions() {
 
         regions.forEach(region => {
             const marker = L.circleMarker(region.coords, {
+                pane: 'spanishRegions',
                 radius: 8,
                 fillColor: '#e0e0e0',
                 fillOpacity: 0.8,
@@ -174,10 +184,54 @@ function addSpanishRegions() {
             marker.adminUnitID = region.code;
             marker.bindTooltip(region.name);
             marker.on('click', (e) => handleMapClick(e, region.code));
+            marker.on('mouseover', (e) => highlightFeature(e));
+            marker.on('mouseout', (e) => resetHighlight(e));
 
             mapLayers[region.code] = marker;
         });
     }
+}
+
+function addCaribbeanCoastalZones() {
+    if (!map.getPane('caribbeanZones')) {
+        map.createPane('caribbeanZones');
+        map.getPane('caribbeanZones').style.zIndex = 645;
+        map.getPane('caribbeanZones').style.pointerEvents = 'auto';
+    }
+
+    const coastalZones = [
+        {
+            code: 'CO-CAR',
+            name: 'Costa Caribe de Colombia',
+            coords: [10.9, -75.1],
+            radius: 250000
+        },
+        {
+            code: 'VE-CAR',
+            name: 'Litoral Caribe de Venezuela',
+            coords: [10.4, -66.8],
+            radius: 220000
+        }
+    ];
+
+    coastalZones.forEach(zone => {
+        const circle = L.circle(zone.coords, {
+            pane: 'caribbeanZones',
+            radius: zone.radius,
+            fillColor: '#ffd166',
+            fillOpacity: 0.45,
+            color: '#e76f51',
+            weight: 2
+        }).addTo(map);
+
+        circle.adminUnitID = zone.code;
+        circle.bindTooltip(zone.name);
+        circle.on('click', (e) => handleMapClick(e, zone.code));
+        circle.on('mouseover', (e) => highlightFeature(e));
+        circle.on('mouseout', (e) => resetHighlight(e));
+
+        mapLayers[zone.code] = circle;
+    });
 }
 
 // ============================================
@@ -204,23 +258,35 @@ function handleMapClick(e, adminUnitID) {
 function highlightFeature(e) {
     const layer = e.target;
     if (layer.setStyle) {
+        if (!layer._hoverStyleBackup) {
+            layer._hoverStyleBackup = {
+                color: layer.options.color,
+                weight: layer.options.weight,
+                fillColor: layer.options.fillColor,
+                fillOpacity: layer.options.fillOpacity
+            };
+        }
+
+        const newWeight = (layer.options.weight || 1) + 1;
+        const newFillOpacity = Math.min(1, (layer.options.fillOpacity || 0.6) + 0.2);
+
         layer.setStyle({
-            weight: 3,
             color: '#667eea',
-            fillOpacity: 0.8
+            weight: newWeight,
+            fillColor: layer.options.fillColor,
+            fillOpacity: newFillOpacity
         });
-        layer.bringToFront();
+        if (layer.bringToFront) {
+            layer.bringToFront();
+        }
     }
 }
 
 function resetHighlight(e) {
     const layer = e.target;
-    if (currentMode !== 'challenge' && layer.setStyle) {
-        layer.setStyle({
-            weight: 1,
-            color: '#666',
-            fillOpacity: 0.6
-        });
+    if (currentMode !== 'challenge' && layer.setStyle && layer._hoverStyleBackup) {
+        layer.setStyle(layer._hoverStyleBackup);
+        layer._hoverStyleBackup = null;
     }
 }
 
