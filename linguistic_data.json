@@ -2,18 +2,7 @@
   "norte_espana": {
     "nombre": "España (Norte-Centro)",
     "admin_units": [
-      "ES-GA",
-      "ES-AS",
-      "ES-CB",
-      "ES-PV",
-      "ES-NC",
-      "ES-RI",
-      "ES-CL",
-      "ES-MD",
-      "ES-CM",
-      "ES-AR",
-      "ES-CT",
-      "ES-VC"
+      "ES-GA", "ES-AS", "ES-CB", "ES-PV", "ES-NC", "ES-RI", "ES-CL", "ES-MD", "ES-CM", "ES-AR", "ES-CT", "ES-VC"
     ],
     "features": {
       "seseo": 0,
@@ -39,22 +28,16 @@
   "sur_espana": {
     "nombre": "España (Sur: Andaluz/Canario)",
     "admin_units": [
-      "ES-AN",
-      "ES-EX",
-      "ES-MC",
-      "ES-CN",
-      "ES-IB",
-      "ES-CE",
-      "ES-ML"
+      "ES-AN", "ES-EX", "ES-MC", "ES-CN", "ES-IB", "ES-CE", "ES-ML"
     ],
     "features": {
-      "seseo": 1,
+      "seseo": 2,
       "yeismo": 1,
       "aspiracion_s": 1,
       "aspiracion_j": 1,
       "perdida_d": 1,
-      "lambdacismo": 1,
-      "ustedeo": 1,
+      "lambdacismo": 2,
+      "ustedeo": 2,
       "uso_tu": 1,
       "uso_tu_vos": 0,
       "uso_vos": 0,
@@ -70,20 +53,12 @@
   },
   "mexico_ca": {
     "nombre": "México y Centroamérica",
-    "admin_units": [
-      "MX",
-      "GT",
-      "SV",
-      "HN",
-      "NI",
-      "CR",
-      "PA"
-    ],
+    "admin_units": ["MX", "GT", "SV", "HN", "NI", "CR", "PA"],
     "features": {
       "seseo": 1,
       "yeismo": 1,
-      "aspiracion_s": 0,
-      "aspiracion_j": 1,
+      "aspiracion_s": 2,
+      "aspiracion_j": 2,
       "perdida_d": 0,
       "lambdacismo": 0,
       "ustedeo": 1,
@@ -102,18 +77,14 @@
   },
   "caribe": {
     "nombre": "Español Caribeño",
-    "admin_units": [
-      "CU",
-      "DO",
-      "PR"
-    ],
+    "admin_units": ["CU", "DO", "PR"],
     "features": {
       "seseo": 1,
       "yeismo": 1,
       "aspiracion_s": 1,
       "aspiracion_j": 1,
       "perdida_d": 1,
-      "lambdacismo": 1,
+      "lambdacismo": 2,
       "ustedeo": 1,
       "uso_tu": 1,
       "uso_tu_vos": 0,
@@ -130,16 +101,10 @@
   },
   "andino": {
     "nombre": "Español Andino",
-    "admin_units": [
-      "VE",
-      "CO",
-      "EC",
-      "PE",
-      "BO"
-    ],
+    "admin_units": ["VE", "CO", "EC", "PE", "BO"],
     "features": {
       "seseo": 1,
-      "yeismo": 0,
+      "yeismo": 2,
       "aspiracion_s": 0,
       "aspiracion_j": 0,
       "perdida_d": 0,
@@ -160,11 +125,7 @@
   },
   "austral": {
     "nombre": "Español Austral",
-    "admin_units": [
-      "AR",
-      "UY",
-      "PY"
-    ],
+    "admin_units": ["AR", "UY", "PY"],
     "features": {
       "seseo": 1,
       "yeismo": 1,
@@ -188,9 +149,7 @@
   },
   "chile": {
     "nombre": "Español de Chile",
-    "admin_units": [
-      "CL"
-    ],
+    "admin_units": ["CL"],
     "features": {
       "seseo": 1,
       "yeismo": 1,
@@ -200,7 +159,7 @@
       "lambdacismo": 0,
       "ustedeo": 1,
       "uso_tu": 0,
-      "uso_tu_vos": 1,
+      "uso_tu_vos": 2,
       "uso_vos": 0,
       "indefinido_vs_perfecto": 1,
       "pronombre_sujeto": 0,
@@ -214,10 +173,7 @@
   },
   "otros": {
     "nombre": "Otras Zonas",
-    "admin_units": [
-      "GQ",
-      "PH"
-    ],
+    "admin_units": ["GQ", "PH"],
     "features": {
       "seseo": 1,
       "yeismo": 1,
