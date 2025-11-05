@@ -1,0 +1,242 @@
+{
+  "norte_espana": {
+    "nombre": "España (Norte-Centro)",
+    "admin_units": [
+      "ES-GA",
+      "ES-AS",
+      "ES-CB",
+      "ES-PV",
+      "ES-NC",
+      "ES-RI",
+      "ES-CL",
+      "ES-MD",
+      "ES-CM",
+      "ES-AR",
+      "ES-CT",
+      "ES-VC"
+    ],
+    "features": {
+      "seseo": 0,
+      "yeismo": 2,
+      "aspiracion_s": 0,
+      "aspiracion_j": 0,
+      "perdida_d": 0,
+      "lambdacismo": 0,
+      "ustedeo": 0,
+      "uso_tu": 1,
+      "uso_tu_vos": 0,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 0,
+      "pronombre_sujeto": 0,
+      "queismo": 0,
+      "dequeismo": 0,
+      "adj_por_adv": 0,
+      "verbos_reflexivos": 0
+    },
+    "sustrato": "Vasco, Celta, Íbero",
+    "adstrato": "Árabe, Galicismo"
+  },
+  "sur_espana": {
+    "nombre": "España (Sur: Andaluz/Canario)",
+    "admin_units": [
+      "ES-AN",
+      "ES-EX",
+      "ES-MC",
+      "ES-CN",
+      "ES-IB",
+      "ES-CE",
+      "ES-ML"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 1,
+      "aspiracion_j": 1,
+      "perdida_d": 1,
+      "lambdacismo": 1,
+      "ustedeo": 1,
+      "uso_tu": 1,
+      "uso_tu_vos": 0,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 0,
+      "queismo": 0,
+      "dequeismo": 0,
+      "adj_por_adv": 0,
+      "verbos_reflexivos": 0
+    },
+    "sustrato": "Guanche (Canarias)",
+    "adstrato": "Árabe"
+  },
+  "mexico_ca": {
+    "nombre": "México y Centroamérica",
+    "admin_units": [
+      "MX",
+      "GT",
+      "SV",
+      "HN",
+      "NI",
+      "CR",
+      "PA"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 0,
+      "aspiracion_j": 1,
+      "perdida_d": 0,
+      "lambdacismo": 0,
+      "ustedeo": 1,
+      "uso_tu": 1,
+      "uso_tu_vos": 1,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 0,
+      "queismo": 0,
+      "dequeismo": 0,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Náhuatl, Maya",
+    "adstrato": "Inglés"
+  },
+  "caribe": {
+    "nombre": "Español Caribeño",
+    "admin_units": [
+      "CU",
+      "DO",
+      "PR"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 1,
+      "aspiracion_j": 1,
+      "perdida_d": 1,
+      "lambdacismo": 1,
+      "ustedeo": 1,
+      "uso_tu": 1,
+      "uso_tu_vos": 0,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 1,
+      "queismo": 1,
+      "dequeismo": 0,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Arahuaca, Caribe",
+    "adstrato": "Lenguas Africanas, Inglés (PR)"
+  },
+  "andino": {
+    "nombre": "Español Andino",
+    "admin_units": [
+      "VE",
+      "CO",
+      "EC",
+      "PE",
+      "BO"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 0,
+      "aspiracion_s": 0,
+      "aspiracion_j": 0,
+      "perdida_d": 0,
+      "lambdacismo": 0,
+      "ustedeo": 1,
+      "uso_tu": 1,
+      "uso_tu_vos": 1,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 0,
+      "queismo": 0,
+      "dequeismo": 0,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Quechua, Aimara",
+    "adstrato": ""
+  },
+  "austral": {
+    "nombre": "Español Austral",
+    "admin_units": [
+      "AR",
+      "UY",
+      "PY"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 1,
+      "aspiracion_j": 0,
+      "perdida_d": 0,
+      "lambdacismo": 0,
+      "ustedeo": 1,
+      "uso_tu": 0,
+      "uso_tu_vos": 0,
+      "uso_vos": 1,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 0,
+      "queismo": 0,
+      "dequeismo": 0,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Guaraní",
+    "adstrato": "Italiano"
+  },
+  "chile": {
+    "nombre": "Español de Chile",
+    "admin_units": [
+      "CL"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 1,
+      "aspiracion_j": 1,
+      "perdida_d": 1,
+      "lambdacismo": 0,
+      "ustedeo": 1,
+      "uso_tu": 0,
+      "uso_tu_vos": 1,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 0,
+      "queismo": 1,
+      "dequeismo": 1,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Mapudungun, Quechua",
+    "adstrato": ""
+  },
+  "otros": {
+    "nombre": "Otras Zonas",
+    "admin_units": [
+      "GQ",
+      "PH"
+    ],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 0,
+      "aspiracion_j": 0,
+      "perdida_d": 0,
+      "lambdacismo": 0,
+      "ustedeo": 0,
+      "uso_tu": 1,
+      "uso_tu_vos": 0,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 0,
+      "queismo": 0,
+      "dequeismo": 0,
+      "adj_por_adv": 0,
+      "verbos_reflexivos": 0
+    },
+    "sustrato": "Lenguas Ecuatoguineanas, Tagalo",
+    "adstrato": ""
+  }
+}

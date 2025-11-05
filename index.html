@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Lingüístico del Español</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .map-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn:hover {
+            background: #dee2e6;
+            transform: translateY(-1px);
+        }
+
+        .btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        #map {
+            height: 600px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .zone-name {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content {
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .features-grid {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .feature-name {
+            color: #4a5568;
+        }
+
+        .feature-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .feature-badge.present {
+            background: #48bb78;
+            color: white;
+        }
+
+        .feature-badge.absent {
+            background: #f56565;
+            color: white;
+        }
+
+        .feature-badge.variable {
+            background: #ecc94b;
+            color: #2d3748;
+        }
+
+        .question-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .question-feature {
+            font-size: 1.2em;
+            color: #664d03;
+            font-weight: 700;
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 12px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .check-btn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .check-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .legend {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .instruction {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #234e52;
+        }
+
+        .result-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .result-message.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+        }
+
+        .result-message.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mapa Lingüístico del Español</h1>
+            <p class="subtitle">Explora las variedades dialectales del español en el mundo</p>
+        </header>
+
+        <div class="main-content">
+            <div class="map-section">
+                <div class="controls">
+                    <div class="btn-group">
+                        <button class="btn active" data-mode="exploration">Exploración</button>
+                        <button class="btn" data-mode="filter">Filtrar</button>
+                        <button class="btn" data-mode="challenge">Desafío</button>
+                    </div>
+
+                    <div class="filter-controls" id="filterControls" style="display: none;">
+                        <label for="featureSelect" style="font-weight: 600;">Rasgo:</label>
+                        <select id="featureSelect">
+                            <option value="">-- Selecciona un rasgo --</option>
+                            <option value="seseo">Seseo</option>
+                            <option value="yeismo">Yeísmo</option>
+                            <option value="aspiracion_s">Aspiración de /s/</option>
+                            <option value="aspiracion_j">Aspiración de /x/</option>
+                            <option value="perdida_d">Pérdida de /d/</option>
+                            <option value="lambdacismo">Lambdacismo</option>
+                            <option value="ustedeo">Ustedeo</option>
+                            <option value="uso_tu">Uso de tú</option>
+                            <option value="uso_tu_vos">Uso de tú y vos</option>
+                            <option value="uso_vos">Uso de vos</option>
+                            <option value="indefinido_vs_perfecto">Indefinido vs Perfecto</option>
+                            <option value="pronombre_sujeto">Pronombre sujeto obligatorio</option>
+                            <option value="queismo">Queísmo</option>
+                            <option value="dequeismo">Dequeísmo</option>
+                            <option value="adj_por_adv">Adjetivo por adverbio</option>
+                            <option value="verbos_reflexivos">Verbos reflexivos distintivos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="map"></div>
+            </div>
+
+            <div class="info-panel">
+                <div id="explorationPanel">
+                    <h2 class="panel-title">Información de la Zona</h2>
+                    <div class="instruction">
+                        Haz clic en cualquier región del mapa para ver sus características lingüísticas.
+                    </div>
+                    <div id="zoneInfo"></div>
+                </div>
+
+                <div id="filterPanel" style="display: none;">
+                    <h2 class="panel-title">Modo Filtro</h2>
+                    <div class="instruction">
+                        Selecciona un rasgo lingüístico para ver su distribución en el mapa.
+                    </div>
+                    <div class="legend">
+                        <div class="legend-title">Leyenda</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #48bb78;"></div>
+                            <span>Presente (1)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f56565;"></div>
+                            <span>Ausente (0)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ecc94b;"></div>
+                            <span>Variable (2)</span>
+                        </div>
+                    </div>
+                    <div id="filterInfo"></div>
+                </div>
+
+                <div id="challengePanel" style="display: none;">
+                    <h2 class="panel-title">Modo Desafío</h2>
+                    <div class="instruction">
+                        Selecciona todas las zonas que tienen el rasgo indicado. Haz clic en "Verificar" cuando termines.
+                    </div>
+                    <div id="questionBox"></div>
+                    <button id="getQuestionBtn" class="check-btn" style="background: #667eea; margin-bottom: 10px;">
+                        Generar Pregunta
+                    </button>
+                    <button id="checkAnswerBtn" class="check-btn" disabled>
+                        Verificar Respuesta
+                    </button>
+                    <div id="resultMessage"></div>
+                    <div id="challengeInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
