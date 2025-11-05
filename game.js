@@ -73,10 +73,10 @@ function getZoneData(adminUnitID) {
 function initializeMap() {
     // Initialize Leaflet map
     map = L.map('map', {
-        center: [20, -20],
+        center: [0, -60],
         zoom: 3,
         minZoom: 2,
-        maxZoom: 8
+        maxZoom: 6
     });
 
     // Add base tile layer
@@ -85,107 +85,28 @@ function initializeMap() {
         opacity: 0.3
     }).addTo(map);
 
-    // Load GeoJSON data
+    // Load and add GeoJSON for countries and Spanish regions
     loadGeoJSONData();
 }
 
 async function loadGeoJSONData() {
+    // For this implementation, we'll use a simplified approach with country boundaries
+    // In production, you'd load a proper GeoJSON with Spanish regions included
+
     try {
-        // Load world countries first
-        await loadWorldCountries();
+        const response = await fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json');
+        const worldGeoJSON = await response.json();
 
-        // Then load Spanish autonomous communities
-        await loadSpanishRegions();
+        // Filter to include only relevant Spanish-speaking countries
+        const relevantCountries = ['ARG', 'BOL', 'CHL', 'COL', 'CRI', 'CUB', 'DOM', 'ECU', 
+                                   'SLV', 'GNQ', 'GTM', 'HND', 'MEX', 'NIC', 'PAN', 'PRY', 
+                                   'PER', 'PHL', 'PRI', 'ESP', 'URY', 'VEN'];
 
-        console.log('Map data loaded successfully');
-    } catch (error) {
-        console.error('Error loading map data:', error);
-        alert('Error al cargar los datos del mapa. Algunas regiones pueden no estar disponibles.');
-    }
-}
+        worldGeoJSON.features.forEach(feature => {
+            const countryCode = feature.id;
+            const iso2 = getISO2Code(countryCode);
 
-// ============================================
-// LOAD WORLD COUNTRIES
-// ============================================
-
-async function loadWorldCountries() {
-    const response = await fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json');
-    const worldGeoJSON = await response.json();
-
-    // ISO3 to ISO2 mapping
-    const iso3to2 = {
-        'ARG': 'AR', 'BOL': 'BO', 'CHL': 'CL', 'COL': 'CO', 'CRI': 'CR',
-        'CUB': 'CU', 'DOM': 'DO', 'ECU': 'EC', 'SLV': 'SV', 'GNQ': 'GQ',
-        'GTM': 'GT', 'HND': 'HN', 'MEX': 'MX', 'NIC': 'NI', 'PAN': 'PA',
-        'PRY': 'PY', 'PER': 'PE', 'PHL': 'PH', 'ESP': 'ES', 'URY': 'UY',
-        'VEN': 'VE', 'PRI': 'PR'
-    };
-
-    worldGeoJSON.features.forEach(feature => {
-        const iso3 = feature.id;
-        const iso2 = iso3to2[iso3];
-
-        if (iso2 && iso2 !== 'ES') {  // Skip Spain, we'll load it separately with regions
-            const layer = L.geoJSON(feature, {
-                style: {
-                    fillColor: '#e0e0e0',
-                    fillOpacity: 0.6,
-                    color: '#666',
-                    weight: 1
-                },
-                onEachFeature: (feature, layer) => {
-                    layer.adminUnitID = iso2;
-                    layer.on({
-                        click: (e) => handleMapClick(e, iso2),
-                        mouseover: highlightFeature,
-                        mouseout: resetHighlight
-                    });
-                }
-            }).addTo(map);
-
-            mapLayers[iso2] = layer;
-        }
-    });
-}
-
-// ============================================
-// LOAD SPANISH AUTONOMOUS COMMUNITIES
-// ============================================
-
-async function loadSpanishRegions() {
-    try {
-        // Option 1: Load from Opendatasoft
-        const response = await fetch('https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-spain-comunidad-autonoma/exports/geojson?lang=es&timezone=Europe%2FBerlin');
-        const spainGeoJSON = await response.json();
-
-        // Mapping from official names to our codes
-        const regionCodeMap = {
-            'Galicia': 'ES-GA',
-            'Principado de Asturias': 'ES-AS',
-            'Cantabria': 'ES-CB',
-            'País Vasco': 'ES-PV',
-            'Comunidad Foral de Navarra': 'ES-NC',
-            'La Rioja': 'ES-RI',
-            'Aragón': 'ES-AR',
-            'Cataluña': 'ES-CT',
-            'Comunidad Valenciana': 'ES-VC',
-            'Región de Murcia': 'ES-MC',
-            'Castilla y León': 'ES-CL',
-            'Comunidad de Madrid': 'ES-MD',
-            'Castilla-La Mancha': 'ES-CM',
-            'Extremadura': 'ES-EX',
-            'Andalucía': 'ES-AN',
-            'Illes Balears': 'ES-IB',
-            'Canarias': 'ES-CN',
-            'Ceuta': 'ES-CE',
-            'Melilla': 'ES-ML'
-        };
-
-        spainGeoJSON.features.forEach(feature => {
-            const regionName = feature.properties.cca_name_es || feature.properties.name;
-            const adminCode = regionCodeMap[regionName];
-
-            if (adminCode) {
+            if (iso2) {
                 const layer = L.geoJSON(feature, {
                     style: {
                         fillColor: '#e0e0e0',
@@ -194,74 +115,56 @@ async function loadSpanishRegions() {
                         weight: 1
                     },
                     onEachFeature: (feature, layer) => {
-                        layer.adminUnitID = adminCode;
-                        layer.bindTooltip(regionName, {
-                            permanent: false,
-                            direction: 'center',
-                            className: 'region-tooltip'
-                        });
+                        layer.adminUnitID = iso2;
                         layer.on({
-                            click: (e) => handleMapClick(e, adminCode),
+                            click: (e) => handleMapClick(e, iso2),
                             mouseover: highlightFeature,
                             mouseout: resetHighlight
                         });
                     }
                 }).addTo(map);
 
-                mapLayers[adminCode] = layer;
-                console.log('Loaded region:', regionName, '→', adminCode);
+                mapLayers[iso2] = layer;
             }
         });
 
-        // Center map on Spain for better view
-        map.setView([40, -3.5], 4);
+        // Add Spanish regions as simplified overlays
+        addSpanishRegions();
 
     } catch (error) {
-        console.error('Error loading Spanish regions from Opendatasoft, trying fallback...', error);
-        await loadSpanishRegionsFallback();
+        console.error('Error loading map data:', error);
     }
 }
 
-// ============================================
-// FALLBACK: Load Spanish regions from alternative source
-// ============================================
+function getISO2Code(iso3) {
+    const mapping = {
+        'ARG': 'AR', 'BOL': 'BO', 'CHL': 'CL', 'COL': 'CO', 'CRI': 'CR',
+        'CUB': 'CU', 'DOM': 'DO', 'ECU': 'EC', 'SLV': 'SV', 'GNQ': 'GQ',
+        'GTM': 'GT', 'HND': 'HN', 'MEX': 'MX', 'NIC': 'NI', 'PAN': 'PA',
+        'PRY': 'PY', 'PER': 'PE', 'PHL': 'PH', 'ESP': 'ES', 'URY': 'UY',
+        'VEN': 'VE'
+    };
+    return mapping[iso3];
+}
 
-async function loadSpanishRegionsFallback() {
-    try {
-        // Option 2: Load from es-atlas (TopoJSON converted to GeoJSON)
-        const response = await fetch('https://cdn.jsdelivr.net/npm/es-atlas@0.5.0/es/autonomies.json');
-        const topoData = await response.json();
-
-        // Convert TopoJSON to GeoJSON using topojson-client
-        // For simplicity, we'll use a pre-converted version or manual mapping
-        console.log('Loading Spanish regions from es-atlas...');
-
-        // Manual region coordinates as fallback
+function addSpanishRegions() {
+    // Simplified: treat Spain as regions
+    // In production, load actual region boundaries
+    const spainLayer = mapLayers['ES'];
+    if (spainLayer) {
+        // Create clickable zones for Spanish regions
+        // This is a simplified version - ideally load real region GeoJSON
         const regions = [
-            { code: 'ES-GA', name: 'Galicia', coords: [42.8, -8.0] },
-            { code: 'ES-AS', name: 'Asturias', coords: [43.3, -5.8] },
-            { code: 'ES-CB', name: 'Cantabria', coords: [43.2, -4.0] },
-            { code: 'ES-PV', name: 'País Vasco', coords: [43.0, -2.5] },
-            { code: 'ES-NC', name: 'Navarra', coords: [42.7, -1.6] },
-            { code: 'ES-RI', name: 'La Rioja', coords: [42.3, -2.5] },
-            { code: 'ES-AR', name: 'Aragón', coords: [41.5, -1.0] },
-            { code: 'ES-CT', name: 'Cataluña', coords: [41.8, 1.5] },
-            { code: 'ES-VC', name: 'C. Valenciana', coords: [39.5, -0.5] },
-            { code: 'ES-MC', name: 'Murcia', coords: [38.0, -1.2] },
-            { code: 'ES-CL', name: 'Castilla y León', coords: [41.8, -4.5] },
-            { code: 'ES-MD', name: 'Madrid', coords: [40.4, -3.7] },
-            { code: 'ES-CM', name: 'Castilla-La Mancha', coords: [39.5, -3.0] },
-            { code: 'ES-EX', name: 'Extremadura', coords: [39.5, -6.0] },
             { code: 'ES-AN', name: 'Andalucía', coords: [37.5, -4.5] },
-            { code: 'ES-IB', name: 'Baleares', coords: [39.6, 3.0] },
-            { code: 'ES-CN', name: 'Canarias', coords: [28.3, -16.5] },
-            { code: 'ES-CE', name: 'Ceuta', coords: [35.9, -5.3] },
-            { code: 'ES-ML', name: 'Melilla', coords: [35.3, -2.9] }
+            { code: 'ES-GA', name: 'Galicia', coords: [42.8, -8.0] },
+            { code: 'ES-MD', name: 'Madrid', coords: [40.4, -3.7] },
+            { code: 'ES-CT', name: 'Cataluña', coords: [41.8, 1.5] },
+            { code: 'ES-CN', name: 'Canarias', coords: [28.3, -16.5] }
         ];
 
         regions.forEach(region => {
             const marker = L.circleMarker(region.coords, {
-                radius: 10,
+                radius: 8,
                 fillColor: '#e0e0e0',
                 fillOpacity: 0.8,
                 color: '#666',
@@ -274,11 +177,6 @@ async function loadSpanishRegionsFallback() {
 
             mapLayers[region.code] = marker;
         });
-
-        console.log('Loaded Spanish regions using fallback markers');
-
-    } catch (error) {
-        console.error('Fallback also failed:', error);
     }
 }
 
@@ -294,6 +192,7 @@ function handleMapClick(e, adminUnitID) {
             handleExplorationClick(adminUnitID);
             break;
         case 'filter':
+            // In filter mode, clicks just show info
             handleExplorationClick(adminUnitID);
             break;
         case 'challenge':
@@ -310,9 +209,7 @@ function highlightFeature(e) {
             color: '#667eea',
             fillOpacity: 0.8
         });
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
+        layer.bringToFront();
     }
 }
 
@@ -436,12 +333,15 @@ function applyFilter(featureKey) {
         verbos_reflexivos: 'Verbos reflexivos distintivos'
     };
 
+    // Reset all colors first
     resetMapColors();
 
+    // Collect statistics
     let presentZones = [];
     let absentZones = [];
     let variableZones = [];
 
+    // Iterate through all zones and color accordingly
     for (const [zoneKey, zoneData] of Object.entries(linguisticData)) {
         const featureValue = zoneData.features[featureKey];
         let color;
@@ -457,6 +357,7 @@ function applyFilter(featureKey) {
             variableZones.push(zoneData.nombre);
         }
 
+        // Color all admin units in this zone
         for (const adminUnit of zoneData.admin_units) {
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
@@ -470,6 +371,7 @@ function applyFilter(featureKey) {
         }
     }
 
+    // Display statistics
     let statsHTML = `
         <div class="info-section">
             <div class="info-label">Rasgo: ${featureLabels[featureKey]}</div>
@@ -524,12 +426,14 @@ function resetMapColors() {
 // ============================================
 
 function generateQuestion() {
+    // Reset state
     selectedZones.clear();
     resetMapColors();
     document.getElementById('resultMessage').innerHTML = '';
     document.getElementById('challengeInfo').innerHTML = '';
     document.getElementById('checkAnswerBtn').disabled = false;
 
+    // Pick a random feature
     const features = [
         'seseo', 'yeismo', 'aspiracion_s', 'aspiracion_j', 'perdida_d',
         'lambdacismo', 'ustedeo', 'uso_vos', 'indefinido_vs_perfecto',
@@ -553,6 +457,7 @@ function generateQuestion() {
 
     const randomFeature = features[Math.floor(Math.random() * features.length)];
 
+    // Find all zones with this feature (value = 1)
     const correctZones = [];
     for (const [zoneKey, zoneData] of Object.entries(linguisticData)) {
         if (zoneData.features[randomFeature] === 1) {
@@ -561,6 +466,7 @@ function generateQuestion() {
     }
 
     if (correctZones.length === 0) {
+        // Try another feature
         generateQuestion();
         return;
     }
@@ -593,8 +499,10 @@ function handleChallengeClick(adminUnitID) {
 
     const zoneKey = zoneData.key;
 
+    // Toggle selection
     if (selectedZones.has(zoneKey)) {
         selectedZones.delete(zoneKey);
+        // Color back to neutral
         for (const adminUnit of zoneData.admin_units) {
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
@@ -608,6 +516,7 @@ function handleChallengeClick(adminUnitID) {
         }
     } else {
         selectedZones.add(zoneKey);
+        // Color as selected
         for (const adminUnit of zoneData.admin_units) {
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
@@ -621,6 +530,7 @@ function handleChallengeClick(adminUnitID) {
         }
     }
 
+    // Show selection info
     displaySelectionInfo();
 }
 
@@ -645,6 +555,7 @@ function checkAnswer() {
     const correctZones = new Set(currentQuestion.correctZones);
     const userZones = selectedZones;
 
+    // Calculate correct and incorrect
     const correctSelections = new Set();
     const missedZones = new Set();
     const wrongSelections = new Set();
@@ -665,8 +576,10 @@ function checkAnswer() {
 
     const isCorrect = wrongSelections.size === 0 && missedZones.size === 0;
 
+    // Color the map
     resetMapColors();
 
+    // Color correct zones green
     for (const zoneKey of correctZones) {
         const zoneData = linguisticData[zoneKey];
         for (const adminUnit of zoneData.admin_units) {
@@ -682,6 +595,7 @@ function checkAnswer() {
         }
     }
 
+    // Color wrong selections red
     for (const zoneKey of wrongSelections) {
         const zoneData = linguisticData[zoneKey];
         for (const adminUnit of zoneData.admin_units) {
@@ -697,6 +611,7 @@ function checkAnswer() {
         }
     }
 
+    // Display result
     let resultHTML;
     if (isCorrect) {
         resultHTML = '<div class="result-message success">¡Correcto! Has identificado todas las zonas.</div>';
@@ -731,6 +646,7 @@ function checkAnswer() {
 // ============================================
 
 function setupEventListeners() {
+    // Mode switching
     document.querySelectorAll('[data-mode]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const mode = e.target.dataset.mode;
@@ -738,10 +654,12 @@ function setupEventListeners() {
         });
     });
 
+    // Feature filter
     document.getElementById('featureSelect').addEventListener('change', (e) => {
         applyFilter(e.target.value);
     });
 
+    // Challenge mode buttons
     document.getElementById('getQuestionBtn').addEventListener('click', generateQuestion);
     document.getElementById('checkAnswerBtn').addEventListener('click', checkAnswer);
 }
@@ -749,15 +667,18 @@ function setupEventListeners() {
 function switchMode(mode) {
     currentMode = mode;
 
+    // Update button states
     document.querySelectorAll('[data-mode]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.mode === mode);
     });
 
+    // Show/hide panels
     document.getElementById('explorationPanel').style.display = mode === 'exploration' ? 'block' : 'none';
     document.getElementById('filterPanel').style.display = mode === 'filter' ? 'block' : 'none';
     document.getElementById('challengePanel').style.display = mode === 'challenge' ? 'block' : 'none';
     document.getElementById('filterControls').style.display = mode === 'filter' ? 'flex' : 'none';
 
+    // Reset state
     resetMapColors();
     selectedZones.clear();
     currentQuestion = null;
