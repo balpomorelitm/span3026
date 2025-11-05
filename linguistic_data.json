@@ -99,6 +99,54 @@
     "sustrato": "Arahuaca, Caribe",
     "adstrato": "Lenguas Africanas, Inglés (PR)"
   },
+  "caribe_colombia": {
+    "nombre": "Español Caribeño (Costa de Colombia)",
+    "admin_units": ["CO-CAR"],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 1,
+      "aspiracion_j": 1,
+      "perdida_d": 1,
+      "lambdacismo": 2,
+      "ustedeo": 1,
+      "uso_tu": 1,
+      "uso_tu_vos": 0,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 1,
+      "queismo": 1,
+      "dequeismo": 0,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Lenguas Chibchas y Caribe",
+    "adstrato": "Lenguas Africanas, Inglés costeño"
+  },
+  "caribe_venezuela": {
+    "nombre": "Español Caribeño (Litoral de Venezuela)",
+    "admin_units": ["VE-CAR"],
+    "features": {
+      "seseo": 1,
+      "yeismo": 1,
+      "aspiracion_s": 1,
+      "aspiracion_j": 1,
+      "perdida_d": 1,
+      "lambdacismo": 2,
+      "ustedeo": 1,
+      "uso_tu": 1,
+      "uso_tu_vos": 0,
+      "uso_vos": 0,
+      "indefinido_vs_perfecto": 1,
+      "pronombre_sujeto": 1,
+      "queismo": 1,
+      "dequeismo": 0,
+      "adj_por_adv": 1,
+      "verbos_reflexivos": 1
+    },
+    "sustrato": "Lenguas Caribe y Arawak",
+    "adstrato": "Lenguas Africanas, Inglés de las Antillas"
+  },
   "andino": {
     "nombre": "Español Andino",
     "admin_units": ["VE", "CO", "EC", "PE", "BO"],
