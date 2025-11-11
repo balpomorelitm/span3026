@@ -1,246 +1,130 @@
 {
-  "norte_espana": {
-    "nombre": "España (Norte-Centro)",
-    "admin_units": [
-      "ES-GA", "ES-AS", "ES-CB", "ES-PV", "ES-NC", "ES-RI", "ES-CL", "ES-MD", "ES-CM", "ES-AR", "ES-CT", "ES-VC"
-    ],
-    "features": {
-      "seseo": 0,
-      "yeismo": 2,
-      "aspiracion_s": 0,
-      "aspiracion_j": 0,
-      "perdida_d": 0,
-      "lambdacismo": 0,
-      "ustedeo": 0,
-      "uso_tu": 1,
-      "uso_tu_vos": 0,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 0,
-      "pronombre_sujeto": 0,
-      "queismo": 0,
-      "dequeismo": 0,
-      "adj_por_adv": 0,
-      "verbos_reflexivos": 0
+  "zones": {
+    "norte_espana": {
+      "nombre": "España (Norte-Centro)",
+      "admin_units": ["ES-GA", "ES-AS", "ES-CB", "ES-PV", "ES-NC", "ES-RI", "ES-CL", "ES-MD", "ES-CM", "ES-AR", "ES-CT", "ES-VC"],
+      "features": { "seseo": 0, "yeismo": 2, "aspiracion_s": 0, "aspiracion_j": 0, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 0, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 0, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 0, "verbos_reflexivos": 0 },
+      "sustrato": "Vasco, Celta, Íbero", "adstrato": "Árabe, Galicismo"
     },
-    "sustrato": "Vasco, Celta, Íbero",
-    "adstrato": "Árabe, Galicismo"
+    "sur_espana": {
+      "nombre": "España (Sur: Andaluz/Canario)",
+      "admin_units": ["ES-AN", "ES-EX", "ES-MC", "ES-CN", "ES-IB", "ES-CE", "ES-ML"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 2, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 0, "verbos_reflexivos": 0 },
+      "sustrato": "Guanche (Canarias)", "adstrato": "Árabe"
+    },
+    "mexico_ca": {
+      "nombre": "México y Centroamérica",
+      "admin_units": ["MX", "GT", "SV", "HN", "NI", "CR", "PA"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 2, "aspiracion_j": 2, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 1, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Náhuatl, Maya", "adstrato": "Inglés"
+    },
+    "caribe": {
+      "nombre": "Español Caribeño",
+      "admin_units": ["CU", "DO", "PR"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 1, "queismo": 1, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Arahuaca, Caribe", "adstrato": "Lenguas Africanas, Inglés (PR)"
+    },
+    "caribe_colombia": {
+      "nombre": "Español Caribeño (Costa de Colombia)",
+      "admin_units": ["CO-CAR"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 1, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 1, "queismo": 1, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Lenguas Chibchas y Caribe", "adstrato": "Lenguas Africanas, Inglés costeño"
+    },
+    "caribe_venezuela": {
+      "nombre": "Español Caribeño (Litoral de Venezuela)",
+      "admin_units": ["VE-CAR"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 1, "queismo": 1, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Lenguas Caribe y Arawak", "adstrato": "Lenguas Africanas, Inglés de las Antillas"
+    },
+    "andino": {
+      "nombre": "Español Andino",
+      "admin_units": ["VE", "CO", "EC", "PE", "BO"],
+      "features": { "seseo": 1, "yeismo": 2, "aspiracion_s": 0, "aspiracion_j": 0, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 1, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Quechua, Aimara", "adstrato": ""
+    },
+    "austral": {
+      "nombre": "Español Austral",
+      "admin_units": ["AR", "UY", "PY"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 0, "perdida_d": 1, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 0, "uso_tu_vos": 0, "uso_vos": 1, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Guaraní", "adstrato": "Italiano"
+    },
+    "chile": {
+      "nombre": "Español de Chile",
+      "admin_units": ["CL"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 0, "uso_tu_vos": 2, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 1, "dequeismo": 1, "adj_por_adv": 1, "verbos_reflexivos": 1 },
+      "sustrato": "Mapudungun, Quechua", "adstrato": ""
+    },
+    "otros": {
+      "nombre": "Otras Zonas",
+      "admin_units": ["GQ", "PH"],
+      "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 0, "aspiracion_j": 0, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 0, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 0, "verbos_reflexivos": 0 },
+      "sustrato": "Lenguas Ecuatoguineanas, Tagalo", "adstrato": ""
+    }
   },
-  "sur_espana": {
-    "nombre": "España (Sur: Andaluz/Canario)",
-    "admin_units": [
-      "ES-AN", "ES-EX", "ES-MC", "ES-CN", "ES-IB", "ES-CE", "ES-ML"
-    ],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 1,
-      "aspiracion_j": 1,
-      "perdida_d": 1,
-      "lambdacismo": 2,
-      "ustedeo": 2,
-      "uso_tu": 1,
-      "uso_tu_vos": 0,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 0,
-      "queismo": 0,
-      "dequeismo": 0,
-      "adj_por_adv": 0,
-      "verbos_reflexivos": 0
+  "feature_descriptions": {
+    "seseo": {
+      "nombre": "Seseo",
+      "descripcion": "El 'seseo' es un fenómeno donde los sonidos de 'c' (ante e, i), 'z' y 's' se pronuncian todos como /s/ (como en 'sopa'). Por ejemplo, 'casa' y 'caza' suenan igual. Es el fenómeno más extendido en el mundo hispano; está en toda Hispanoamérica y en parte de España (Canarias, parte de Andalucía)."
     },
-    "sustrato": "Guanche (Canarias)",
-    "adstrato": "Árabe"
-  },
-  "mexico_ca": {
-    "nombre": "México y Centroamérica",
-    "admin_units": ["MX", "GT", "SV", "HN", "NI", "CR", "PA"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 2,
-      "aspiracion_j": 2,
-      "perdida_d": 0,
-      "lambdacismo": 0,
-      "ustedeo": 1,
-      "uso_tu": 1,
-      "uso_tu_vos": 1,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 0,
-      "queismo": 0,
-      "dequeismo": 0,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "yeismo": {
+      "nombre": "Yeísmo",
+      "descripcion": "El 'yeísmo' es cuando se pronuncian igual la 'y' (como en 'yo') y la 'll' (como en 'llave'). En zonas no yeístas, 'pollo' y 'poyo' suenan diferente. Hoy, el yeísmo está en casi todas las zonas, aunque hay regiones en España y en la zona andina que todavía hacen la distinción."
     },
-    "sustrato": "Náhuatl, Maya",
-    "adstrato": "Inglés"
-  },
-  "caribe": {
-    "nombre": "Español Caribeño",
-    "admin_units": ["CU", "DO", "PR"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 1,
-      "aspiracion_j": 1,
-      "perdida_d": 1,
-      "lambdacismo": 2,
-      "ustedeo": 1,
-      "uso_tu": 1,
-      "uso_tu_vos": 0,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 1,
-      "queismo": 1,
-      "dequeismo": 0,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "aspiracion_s": {
+      "nombre": "Aspiración de /s/",
+      "descripcion": "Este fenómeno es la pronunciación de la /s/ al final de una sílaba como una 'h' suave (aspirada). Por ejemplo, 'estos' suena como 'ehtoh'. Es muy común en el sur de España (Andalucía, Canarias) y en todo el Caribe, Chile y la región Austral."
     },
-    "sustrato": "Arahuaca, Caribe",
-    "adstrato": "Lenguas Africanas, Inglés (PR)"
-  },
-  "caribe_colombia": {
-    "nombre": "Español Caribeño (Costa de Colombia)",
-    "admin_units": ["CO-CAR"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 1,
-      "aspiracion_j": 1,
-      "perdida_d": 1,
-      "lambdacismo": 2,
-      "ustedeo": 1,
-      "uso_tu": 1,
-      "uso_tu_vos": 1,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 1,
-      "queismo": 1,
-      "dequeismo": 0,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "aspiracion_j": {
+      "nombre": "Aspiración de /x/",
+      "descripcion": "Esto es la pronunciación del sonido 'j' (grafía 'j' o 'g' ante e, i) como una 'h' suave (aspirada), similar al sonido de la 'h' en inglés. Por ejemplo, 'caja' suena como 'caha'. Es típico de las zonas con aspiración de /s/, como el Caribe y el sur de España."
     },
-    "sustrato": "Lenguas Chibchas y Caribe",
-    "adstrato": "Lenguas Africanas, Inglés costeño"
-  },
-  "caribe_venezuela": {
-    "nombre": "Español Caribeño (Litoral de Venezuela)",
-    "admin_units": ["VE-CAR"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 1,
-      "aspiracion_j": 1,
-      "perdida_d": 1,
-      "lambdacismo": 2,
-      "ustedeo": 1,
-      "uso_tu": 1,
-      "uso_tu_vos": 0,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 1,
-      "queismo": 1,
-      "dequeismo": 0,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "perdida_d": {
+      "nombre": "Pérdida de /d/",
+      "descripcion": "Este fenómeno es la eliminación (pérdida) de la /d/ cuando está entre dos vocales, especialmente al final de la palabra. Por ejemplo, 'cantado' suena como 'cantao' o 'ciudad' suena como 'ciudá'. Es muy común en zonas del Caribe y el sur de España."
     },
-    "sustrato": "Lenguas Caribe y Arawak",
-    "adstrato": "Lenguas Africanas, Inglés de las Antillas"
-  },
-  "andino": {
-    "nombre": "Español Andino",
-    "admin_units": ["VE", "CO", "EC", "PE", "BO"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 2,
-      "aspiracion_s": 0,
-      "aspiracion_j": 0,
-      "perdida_d": 0,
-      "lambdacismo": 0,
-      "ustedeo": 1,
-      "uso_tu": 1,
-      "uso_tu_vos": 1,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 0,
-      "queismo": 0,
-      "dequeismo": 0,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "lambdacismo": {
+      "nombre": "Lambdacismo",
+      "descripcion": "El 'lambdacismo' es el cambio del sonido /r/ por /l/ al final de una sílaba. Por ejemplo, 'puerta' puede sonar como 'puelta'. Es un rasgo que aparece de forma variable en la zona del Caribe, y a veces se asocia con el habla popular."
     },
-    "sustrato": "Quechua, Aimara",
-    "adstrato": ""
-  },
-  "austral": {
-    "nombre": "Español Austral",
-    "admin_units": ["AR", "UY", "PY"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 1,
-      "aspiracion_j": 0,
-      "perdida_d": 1,
-      "lambdacismo": 0,
-      "ustedeo": 1,
-      "uso_tu": 0,
-      "uso_tu_vos": 0,
-      "uso_vos": 1,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 0,
-      "queismo": 0,
-      "dequeismo": 0,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "ustedeo": {
+      "nombre": "Ustedeo",
+      "descripcion": "El 'ustedeo' es el uso de 'usted' (en lugar de 'tú' o 'vos') para el trato familiar o de confianza. En la mayoría del mundo hispano, 'usted' es formal, pero en algunas zonas (como Costa Rica o partes de Colombia y los Andes) se usa 'usted' entre amigos o familia."
     },
-    "sustrato": "Guaraní",
-    "adstrato": "Italiano"
-  },
-  "chile": {
-    "nombre": "Español de Chile",
-    "admin_units": ["CL"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 1,
-      "aspiracion_j": 1,
-      "perdida_d": 1,
-      "lambdacismo": 0,
-      "ustedeo": 1,
-      "uso_tu": 0,
-      "uso_tu_vos": 2,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 0,
-      "queismo": 1,
-      "dequeismo": 1,
-      "adj_por_adv": 1,
-      "verbos_reflexivos": 1
+    "uso_tu": {
+      "nombre": "Uso de tú",
+      "descripcion": "Es el uso del pronombre 'tú' como forma de tratamiento informal de confianza. Es la forma estándar en la mayor parte de España, México y el Caribe. Se opone al 'voseo' (uso de 'vos') y al 'ustedeo'."
     },
-    "sustrato": "Mapudungun, Quechua",
-    "adstrato": ""
-  },
-  "otros": {
-    "nombre": "Otras Zonas",
-    "admin_units": ["GQ", "PH"],
-    "features": {
-      "seseo": 1,
-      "yeismo": 1,
-      "aspiracion_s": 0,
-      "aspiracion_j": 0,
-      "perdida_d": 0,
-      "lambdacismo": 0,
-      "ustedeo": 0,
-      "uso_tu": 1,
-      "uso_tu_vos": 0,
-      "uso_vos": 0,
-      "indefinido_vs_perfecto": 1,
-      "pronombre_sujeto": 0,
-      "queismo": 0,
-      "dequeismo": 0,
-      "adj_por_adv": 0,
-      "verbos_reflexivos": 0
+    "uso_tu_vos": {
+      "nombre": "Uso de tú y vos",
+      "descripcion": "Describe zonas donde coexisten el 'tú' y el 'vos' para el trato informal. A veces, 'tú' es más estándar o urbano y 'vos' es más rural o familiar (como en Chile), o simplemente varían (como en partes de Centroamérica y la zona Andina)."
     },
-    "sustrato": "Lenguas Ecuatoguineanas, Tagalo",
-    "adstrato": ""
+    "uso_vos": {
+      "nombre": "Voseo",
+      "descripcion": "El 'voseo' es el uso del pronombre 'vos' en lugar de 'tú' para el trato informal. Es la forma dominante en la región Austral (Argentina, Uruguay, Paraguay) y se usa con formas verbales propias (ej. 'vos tenés' en lugar de 'tú tienes')."
+    },
+    "indefinido_vs_perfecto": {
+      "nombre": "Preferencia por Indefinido",
+      "descripcion": "Se refiere a la preferencia por usar el Pretérito Indefinido ('fui', 'comí') en lugar del Pretérito Perfecto ('he ido', 'he comido'), incluso para acciones recientes. Por ejemplo, 'hoy comí pasta' (preferencia por indefinido) vs. 'hoy he comido pasta' (estándar en España)."
+    },
+    "pronombre_sujeto": {
+      "nombre": "Pronombre sujeto obligatorio",
+      "descripcion": "En español, el sujeto (yo, tú, él) normalmente se omite (ej. 'llueve'). Este fenómeno es la tendencia a *no* omitir el pronombre, incluso cuando no es necesario. Por ejemplo, 'Él llueve'. Es un rasgo distintivo del español caribeño."
+    },
+    "queismo": {
+      "nombre": "Queísmo",
+      "descripcion": "El 'queísmo' es la omisión de la preposición 'de' antes de 'que', cuando debería estar. Por ejemplo, 'Me alegro *que* vinieras' (queísmo) en lugar de 'Me alegro *de que* vinieras' (norma estándar). Es un fenómeno variable que aparece en muchas zonas."
+    },
+    "dequeismo": {
+      "nombre": "Dequeísmo",
+      "descripcion": "El 'dequeísmo' es el fenómeno opuesto al queísmo. Es el uso innecesario de la preposición 'de' antes de 'que'. Por ejemplo, 'Pienso *de que* está mal' (dequeísmo) en lugar de 'Pienso *que* está mal' (norma estándar). También es variable y se da en Chile."
+    },
+    "adj_por_adv": {
+      "nombre": "Adjetivo por adverbio",
+      "descripcion": "Este rasgo es el uso de un adjetivo (ej. 'rápido') donde la norma estándar usaría un adverbio (ej. 'rápidamente'). Por ejemplo, 'El coche va *rápido*' en lugar de '...rápidamente'. Es muy común en todo el mundo hispano, especialmente en México, C.A. y Andes."
+    },
+    "verbos_reflexivos": {
+      "nombre": "Verbos reflexivos distintivos",
+      "descripcion": "Se refiere al uso particular de verbos reflexivos que no son comunes en otras zonas. Por ejemplo, el uso de 'regalar' como reflexivo ('¿me lo regalas?') o el uso de 'antojarse' ('se me antoja'). Es común en México, C.A., Caribe y zona Andina."
+    }
   }
 }

@@ -2,7 +2,8 @@
 // GLOBAL VARIABLES AND STATE
 // ============================================
 
-let linguisticData = {};
+let zoneData = {}; // <--- MODIFICADO
+let featureDescriptions = {}; // <--- NUEVO
 let map;
 let mapLayers = {};
 let currentMode = 'exploration';
@@ -28,8 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadData() {
     try {
         const response = await fetch('linguistic_data.json');
-        linguisticData = await response.json();
-        console.log('Linguistic data loaded:', Object.keys(linguisticData).length, 'zones');
+        const rawData = await response.json(); // <--- MODIFICADO
+        
+        zoneData = rawData.zones; // <--- NUEVO
+        featureDescriptions = rawData.feature_descriptions; // <--- NUEVO
+
+        console.log('Linguistic data loaded:', Object.keys(zoneData).length, 'zones');
     } catch (error) {
         console.error('Error loading linguistic data:', error);
         alert('Error al cargar los datos lingüísticos. Por favor, recarga la página.');
@@ -42,8 +47,8 @@ async function loadData() {
 
 function buildReverseIndex() {
     // Build the adminUnitToZone lookup table
-    for (const [zoneKey, zoneData] of Object.entries(linguisticData)) {
-        for (const adminUnit of zoneData.admin_units) {
+    for (const [zoneKey, data] of Object.entries(zoneData)) { // <--- MODIFICADO (zoneData)
+        for (const adminUnit of data.admin_units) {
             adminUnitToZone[adminUnit] = zoneKey;
         }
     }
@@ -60,7 +65,7 @@ function getZoneData(adminUnitID) {
     if (zoneKey) {
         return {
             key: zoneKey,
-            ...linguisticData[zoneKey]
+            ...zoneData[zoneKey] // <--- MODIFICADO (zoneData)
         };
     }
     return null;
@@ -85,8 +90,8 @@ function initializeMap() {
         opacity: 0.3
     }).addTo(map);
 
-// Load and add GeoJSON for countries and Spanish regions
-loadGeoJSONData();
+    // Load and add GeoJSON for countries and Spanish regions
+    loadGeoJSONData();
 }
 
 async function loadGeoJSONData() {
@@ -291,33 +296,24 @@ function resetHighlight(e) {
 // ============================================
 
 function handleExplorationClick(adminUnitID) {
-    const zoneData = getZoneData(adminUnitID);
+    const data = getZoneData(adminUnitID); // <--- MODIFICADO (data)
 
-    if (zoneData) {
-        displayZoneInfo(zoneData);
+    if (data) { // <--- MODIFICADO (data)
+        displayZoneInfo(data); // <--- MODIFICADO (data)
     } else {
         document.getElementById('zoneInfo').innerHTML = 
             '<p style="color: #999;">Esta región no está incluida en los datos lingüísticos.</p>';
     }
 }
 
-function displayZoneInfo(zoneData) {
+function displayZoneInfo(data) { // <--- MODIFICADO (data)
     const featureLabels = {
-        seseo: 'Seseo',
-        yeismo: 'Yeísmo',
-        aspiracion_s: 'Aspiración de /s/',
-        aspiracion_j: 'Aspiración de /x/',
-        perdida_d: 'Pérdida de /d/',
-        lambdacismo: 'Lambdacismo',
-        ustedeo: 'Ustedeo',
-        uso_tu: 'Uso de tú',
-        uso_tu_vos: 'Uso de tú y vos',
-        uso_vos: 'Uso de vos',
-        indefinido_vs_perfecto: 'Preferencia por indefinido',
-        pronombre_sujeto: 'Pronombre sujeto obligatorio',
-        queismo: 'Queísmo',
-        dequeismo: 'Dequeísmo',
-        adj_por_adv: 'Adjetivo por adverbio',
+        seseo: 'Seseo', yeismo: 'Yeísmo', aspiracion_s: 'Aspiración de /s/',
+        aspiracion_j: 'Aspiración de /x/', perdida_d: 'Pérdida de /d/', lambdacismo: 'Lambdacismo',
+        ustedeo: 'Ustedeo', uso_tu: 'Uso de tú', uso_tu_vos: 'Uso de tú y vos',
+        uso_vos: 'Uso de vos', indefinido_vs_perfecto: 'Preferencia por indefinido',
+        pronombre_sujeto: 'Pronombre sujeto obligatorio', queismo: 'Queísmo',
+        dequeismo: 'Dequeísmo', adj_por_adv: 'Adjetivo por adverbio',
         verbos_reflexivos: 'Verbos reflexivos distintivos'
     };
 
@@ -329,7 +325,7 @@ function displayZoneInfo(zoneData) {
     };
 
     let featuresHTML = '<div class="features-grid">';
-    for (const [key, value] of Object.entries(zoneData.features)) {
+    for (const [key, value] of Object.entries(data.features)) { // <--- MODIFICADO (data.features)
         featuresHTML += `
             <div class="feature-item">
                 <span class="feature-name">${featureLabels[key] || key}</span>
@@ -340,9 +336,7 @@ function displayZoneInfo(zoneData) {
     featuresHTML += '</div>';
 
     const html = `
-        <div class="zone-name">${zoneData.nombre}</div>
-
-        <div class="info-section">
+        <div class="zone-name">${data.nombre}</div> <div class="info-section">
             <div class="info-label">Rasgos Fonológicos y Gramaticales</div>
             <div class="info-content">
                 ${featuresHTML}
@@ -351,14 +345,11 @@ function displayZoneInfo(zoneData) {
 
         <div class="info-section">
             <div class="info-label">Sustrato Lingüístico</div>
-            <div class="info-content">${zoneData.sustrato || 'No especificado'}</div>
-        </div>
+            <div class="info-content">${data.sustrato || 'No especificado'}</div> </div>
 
-        ${zoneData.adstrato ? `
-            <div class="info-section">
+        ${data.adstrato ? ` <div class="info-section">
                 <div class="info-label">Adstrato</div>
-                <div class="info-content">${zoneData.adstrato}</div>
-            </div>
+                <div class="info-content">${data.adstrato}</div> </div>
         ` : ''}
     `;
 
@@ -376,27 +367,21 @@ function applyFilter(featureKey) {
         return;
     }
 
-    const featureLabels = {
-        seseo: 'Seseo',
-        yeismo: 'Yeísmo',
-        aspiracion_s: 'Aspiración de /s/',
-        aspiracion_j: 'Aspiración de /x/',
-        perdida_d: 'Pérdida de /d/',
-        lambdacismo: 'Lambdacismo',
-        ustedeo: 'Ustedeo',
-        uso_tu: 'Uso de tú',
-        uso_tu_vos: 'Uso de tú y vos',
-        uso_vos: 'Uso de vos',
-        indefinido_vs_perfecto: 'Preferencia por indefinido',
-        pronombre_sujeto: 'Pronombre sujeto obligatorio',
-        queismo: 'Queísmo',
-        dequeismo: 'Dequeísmo',
-        adj_por_adv: 'Adjetivo por adverbio',
-        verbos_reflexivos: 'Verbos reflexivos distintivos'
-    };
-
-    // Reset all colors first
-    resetMapColors();
+    // --- (BLOQUE NUEVO) OBTENER Y MOSTRAR DESCRIPCIÓN ---
+    const descriptionObj = featureDescriptions[featureKey];
+    let descriptionHTML = '';
+    if (descriptionObj) {
+        descriptionHTML = `
+            <div class="info-section">
+                <div class="info-label" style="font-size: 1.1em; color: #667eea;">${descriptionObj.nombre}</div>
+                <div class="info-content" style="line-height: 1.5; font-size: 0.95em;">
+                    ${descriptionObj.descripcion}
+                </div>
+            </div>
+            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+        `;
+    }
+    // --- (FIN BLOQUE NUEVO) ---
 
     // Collect statistics
     let presentZones = [];
@@ -404,23 +389,23 @@ function applyFilter(featureKey) {
     let variableZones = [];
 
     // Iterate through all zones and color accordingly
-    for (const [zoneKey, zoneData] of Object.entries(linguisticData)) {
-        const featureValue = zoneData.features[featureKey];
+    for (const [zoneKey, data] of Object.entries(zoneData)) { // <--- MODIFICADO (zoneData)
+        const featureValue = data.features[featureKey]; // <--- MODIFICADO (data)
         let color;
 
         if (featureValue === 1) {
             color = '#48bb78';
-            presentZones.push(zoneData.nombre);
+            presentZones.push(data.nombre); // <--- MODIFICADO (data)
         } else if (featureValue === 0) {
             color = '#f56565';
-            absentZones.push(zoneData.nombre);
+            absentZones.push(data.nombre); // <--- MODIFICADO (data)
         } else if (featureValue === 2) {
             color = '#ecc94b';
-            variableZones.push(zoneData.nombre);
+            variableZones.push(data.nombre); // <--- MODIFICADO (data)
         }
 
         // Color all admin units in this zone
-        for (const adminUnit of zoneData.admin_units) {
+        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -436,7 +421,7 @@ function applyFilter(featureKey) {
     // Display statistics
     let statsHTML = `
         <div class="info-section">
-            <div class="info-label">Rasgo: ${featureLabels[featureKey]}</div>
+            <div class="info-label">Distribución del Rasgo</div>
         </div>
     `;
 
@@ -467,7 +452,8 @@ function applyFilter(featureKey) {
         `;
     }
 
-    document.getElementById('filterInfo').innerHTML = statsHTML;
+    // <--- MODIFICADO: Añade la descripción al principio ---
+    document.getElementById('filterInfo').innerHTML = descriptionHTML + statsHTML;
 }
 
 function resetMapColors() {
@@ -502,27 +488,14 @@ function generateQuestion() {
         'pronombre_sujeto', 'queismo', 'dequeismo'
     ];
 
-    const featureLabels = {
-        seseo: 'Seseo',
-        yeismo: 'Yeísmo',
-        aspiracion_s: 'Aspiración de /s/',
-        aspiracion_j: 'Aspiración de /x/',
-        perdida_d: 'Pérdida de /d/ intervocálica',
-        lambdacismo: 'Lambdacismo',
-        ustedeo: 'Ustedeo',
-        uso_vos: 'Uso de vos',
-        indefinido_vs_perfecto: 'Preferencia por indefinido',
-        pronombre_sujeto: 'Pronombre sujeto obligatorio',
-        queismo: 'Queísmo',
-        dequeismo: 'Dequeísmo'
-    };
-
+    // Obtener la etiqueta del objeto de descripciones
     const randomFeature = features[Math.floor(Math.random() * features.length)];
+    const featureLabel = featureDescriptions[randomFeature] ? featureDescriptions[randomFeature].nombre : randomFeature;
 
     // Find all zones with this feature (value = 1)
     const correctZones = [];
-    for (const [zoneKey, zoneData] of Object.entries(linguisticData)) {
-        if (zoneData.features[randomFeature] === 1) {
+    for (const [zoneKey, data] of Object.entries(zoneData)) { // <--- MODIFICADO (zoneData)
+        if (data.features[randomFeature] === 1) { // <--- MODIFICADO (data)
             correctZones.push(zoneKey);
         }
     }
@@ -535,7 +508,7 @@ function generateQuestion() {
 
     currentQuestion = {
         feature: randomFeature,
-        featureLabel: featureLabels[randomFeature],
+        featureLabel: featureLabel, // <--- MODIFICADO
         correctZones: correctZones
     };
 
@@ -554,18 +527,18 @@ function handleChallengeClick(adminUnitID) {
         return;
     }
 
-    const zoneData = getZoneData(adminUnitID);
-    if (!zoneData) {
+    const data = getZoneData(adminUnitID); // <--- MODIFICADO (data)
+    if (!data) { // <--- MODIFICADO (data)
         return;
     }
 
-    const zoneKey = zoneData.key;
+    const zoneKey = data.key; // <--- MODIFICADO (data)
 
     // Toggle selection
     if (selectedZones.has(zoneKey)) {
         selectedZones.delete(zoneKey);
         // Color back to neutral
-        for (const adminUnit of zoneData.admin_units) {
+        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -579,7 +552,7 @@ function handleChallengeClick(adminUnitID) {
     } else {
         selectedZones.add(zoneKey);
         // Color as selected
-        for (const adminUnit of zoneData.admin_units) {
+        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -597,7 +570,7 @@ function handleChallengeClick(adminUnitID) {
 }
 
 function displaySelectionInfo() {
-    const selectedNames = Array.from(selectedZones).map(key => linguisticData[key].nombre);
+    const selectedNames = Array.from(selectedZones).map(key => zoneData[key].nombre); // <--- MODIFICADO (zoneData)
     const html = `
         <div class="info-section">
             <div class="info-label">Zonas Seleccionadas (${selectedZones.size})</div>
@@ -643,8 +616,8 @@ function checkAnswer() {
 
     // Color correct zones green
     for (const zoneKey of correctZones) {
-        const zoneData = linguisticData[zoneKey];
-        for (const adminUnit of zoneData.admin_units) {
+        const data = zoneData[zoneKey]; // <--- MODIFICADO (zoneData)
+        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -659,8 +632,8 @@ function checkAnswer() {
 
     // Color wrong selections red
     for (const zoneKey of wrongSelections) {
-        const zoneData = linguisticData[zoneKey];
-        for (const adminUnit of zoneData.admin_units) {
+        const data = zoneData[zoneKey]; // <--- MODIFICADO (zoneData)
+        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -678,8 +651,8 @@ function checkAnswer() {
     if (isCorrect) {
         resultHTML = '<div class="result-message success">¡Correcto! Has identificado todas las zonas.</div>';
     } else {
-        const correctNames = Array.from(correctZones).map(k => linguisticData[k].nombre);
-        const wrongNames = Array.from(wrongSelections).map(k => linguisticData[k].nombre);
+        const correctNames = Array.from(correctZones).map(k => zoneData[k].nombre); // <--- MODIFICADO (zoneData)
+        const wrongNames = Array.from(wrongSelections).map(k => zoneData[k].nombre); // <--- MODIFICADO (zoneData)
 
         resultHTML = '<div class="result-message error">Respuesta incorrecta</div>';
         resultHTML += `
