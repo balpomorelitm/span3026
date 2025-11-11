@@ -136,5 +136,103 @@
       "nombre": "Verbos reflexivos distintivos",
       "descripcion": "Se refiere al uso particular de verbos reflexivos que no son comunes en otras zonas. Por ejemplo, el uso de 'regalar' como reflexivo ('¿me lo regalas?') o el uso de 'antojarse' ('se me antoja'). Es común en México, C.A., Caribe y zona Andina."
     }
-  }
+  },
+  "text_bank_questions": [
+    {
+      "text": "¿Vosotros habéis cogido el ordenador? ¡Es muy guay! Le he dicho a Juan que lo traiga.",
+      "answer": "norte_espana"
+    },
+    {
+      "text": "Ayer he ido a la compra. Para la cena, cocinamos bacalao. ¿Vosotros queréis?",
+      "answer": "norte_espana"
+    },
+    {
+      "text": "Le vi en la calle, pero no le dije nada. Es un chico majo. ¿Vosotros le conocéis?",
+      "answer": "norte_espana"
+    },
+    {
+      "text": "¡Illo! ¿Qué ha' dicho? E'toy e'perando la guagua y no ha vení'o.",
+      "answer": "sur_espana"
+    },
+    {
+      "text": "U'tedes noaben lo que me pa'ó. Fui a por papas y me 'ejao el dinero.",
+      "answer": "sur_espana"
+    },
+    {
+      "text": "¡Miarma! Eres un po' quejica, ¿no? Vamoh a comé' algo, que tengo jambre.",
+      "answer": "sur_espana"
+    },
+    {
+      "text": "¡Ándale, cuate! Pásame ese chile, ¿no? ¿Qué tanto quieres? No te vayas a enfermar.",
+      "answer": "mexico_ca"
+    },
+    {
+      "text": "¿Mande? No traje mi popote. Ahorita le pido uno al mesero. ¡Qué padre!",
+      "answer": "mexico_ca"
+    },
+    {
+      "text": "¡Qué chido! Ese güey se fue en camión a comprar aguacates.",
+      "answer": "mexico_ca"
+    },
+    {
+      "text": "Aló, ¿qué bolá, asere? E'toy e'perando la guagua, pero 'ta demorá.",
+      "answer": "caribe"
+    },
+    {
+      "text": "¡Wepa! ¿Qué tú quieres, jevo? Voy pa' la tienda a bu'cal algo. No puedo abri' la puelta.",
+      "answer": "caribe"
+    },
+    {
+      "text": "¡Mi amol! ¿Qué e' lo que tú dice'? Voy a comei' un poco de a'rro' con habichuelas.",
+      "answer": "caribe"
+    },
+    {
+      "text": "Oye, el socio mío no 'ta en su casa. Voy a ve' si lo encuentro ma' tarde.",
+      "answer": "caribe"
+    },
+    {
+      "text": "Papi, ¿me da' un break? E'toy parkeando la troca. Te llamo pa'trás, dame un chance.",
+      "answer": "caribe"
+    },
+    {
+      "text": "Disculpe, ¿me da un juguito de palta, pues? ¡Qué chévere! ¿Usted sabe dónde es?",
+      "answer": "andino"
+    },
+    {
+      "text": "Voy a comprar papas, choclo y una gaseosa. El bus se demora mucho. (La 's' suena clara)",
+      "answer": "andino"
+    },
+    {
+      "text": "El 'pollo' y el 'poyo' no son lo mismo. Es importante pronunciar bien la 'elle'.",
+      "answer": "andino"
+    },
+    {
+      "text": "¿Viste la shuvia de ayer? No pude ir al laburo. Che, ¿vos tenés hora?",
+      "answer": "austral"
+    },
+    {
+      "text": "E'cuchame, pibe. Vo' tené' que 'perar. No 'toy li'to. ¡Qué quilombo!",
+      "answer": "austral"
+    },
+    {
+      "text": "Agarrá el subte, boludo. Andá vos, yo me quedo acá. Sos un capo.",
+      "answer": "austral"
+    },
+    {
+      "text": "¿Cachái lo que te digo? Fue súper fome. ¿Tú querís ir al tiro o no?",
+      "answer": "chile"
+    },
+    {
+      "text": "¡Qué bacán tu pololo! ¿Vamoh a comer? Tengo la guata vacía, poh.",
+      "answer": "chile"
+    },
+    {
+      "text": "Me da lata ir a la pega. Mi compadre e' súper cahuinero y me carga.",
+      "answer": "chile"
+    },
+    {
+      "text": "No te preocupís, poh. Si e' un condoro no más. Cómprate un completo y 'tamos listos.",
+      "answer": "chile"
+    }
+  ]
 }
