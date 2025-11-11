@@ -10,6 +10,7 @@ let currentMode = 'exploration';
 let currentQuestion = null;
 let selectedZones = new Set();
 let adminUnitToZone = {}; // Reverse lookup cache
+let activeExplorationZone = null;
 
 // ============================================
 // INITIALIZATION
@@ -53,6 +54,62 @@ function buildReverseIndex() {
         }
     }
     console.log('Reverse index built:', Object.keys(adminUnitToZone).length, 'admin units');
+}
+
+function getDefaultStyle(layer) {
+    if (layer && layer.defaultStyle) {
+        return { ...layer.defaultStyle };
+    }
+    return {
+        fillColor: '#e0e0e0',
+        fillOpacity: 0.6,
+        color: '#666',
+        weight: 1
+    };
+}
+
+function applyDefaultStyle(layer) {
+    if (layer && layer.setStyle) {
+        layer.setStyle(getDefaultStyle(layer));
+    }
+}
+
+function highlightExplorationZone(zoneKey) {
+    if (currentMode !== 'exploration') {
+        return;
+    }
+
+    if (activeExplorationZone === zoneKey) {
+        return;
+    }
+
+    resetMapColors();
+
+    const zone = zoneData[zoneKey];
+    if (!zone) {
+        return;
+    }
+
+    activeExplorationZone = zoneKey;
+
+    for (const adminUnit of zone.admin_units) {
+        const layer = mapLayers[adminUnit];
+        if (layer && layer.setStyle) {
+            const baseStyle = getDefaultStyle(layer);
+            const highlightStyle = {
+                ...baseStyle,
+                fillColor: '#667eea',
+                color: '#2b6cb0',
+                fillOpacity: Math.min(1, (baseStyle.fillOpacity || 0.6) + 0.2),
+                weight: (baseStyle.weight || 1) + 1
+            };
+
+            layer.setStyle(highlightStyle);
+            if (layer.bringToFront) {
+                layer.bringToFront();
+            }
+        }
+    }
 }
 
 /**
@@ -112,13 +169,15 @@ async function loadGeoJSONData() {
             const iso2 = getISO2Code(countryCode);
 
             if (iso2) {
+                const defaultStyle = {
+                    fillColor: '#e0e0e0',
+                    fillOpacity: 0.6,
+                    color: '#666',
+                    weight: 1
+                };
+
                 const layer = L.geoJSON(feature, {
-                    style: {
-                        fillColor: '#e0e0e0',
-                        fillOpacity: 0.6,
-                        color: '#666',
-                        weight: 1
-                    },
+                    style: defaultStyle,
                     onEachFeature: (feature, layer) => {
                         layer.adminUnitID = iso2;
                         layer.on({
@@ -128,6 +187,8 @@ async function loadGeoJSONData() {
                         });
                     }
                 }).addTo(map);
+
+                layer.defaultStyle = defaultStyle;
 
                 mapLayers[iso2] = layer;
             }
@@ -175,13 +236,17 @@ function addSpanishRegions() {
         ];
 
         regions.forEach(region => {
-            const marker = L.circleMarker(region.coords, {
-                pane: 'spanishRegions',
-                radius: 8,
+            const defaultStyle = {
                 fillColor: '#e0e0e0',
                 fillOpacity: 0.8,
                 color: '#666',
                 weight: 2
+            };
+
+            const marker = L.circleMarker(region.coords, {
+                pane: 'spanishRegions',
+                radius: 8,
+                ...defaultStyle
             }).addTo(map);
 
             marker.adminUnitID = region.code;
@@ -190,6 +255,7 @@ function addSpanishRegions() {
             marker.on('mouseover', (e) => highlightFeature(e));
             marker.on('mouseout', (e) => resetHighlight(e));
 
+            marker.defaultStyle = defaultStyle;
             mapLayers[region.code] = marker;
         });
     }
@@ -216,13 +282,17 @@ function addCaribbeanCoastalZones() {
     ];
 
     coastalZones.forEach(zone => {
-        const marker = L.circleMarker(zone.coords, {
-            pane: 'caribbeanZones',
-            radius: 8,
+        const defaultStyle = {
             fillColor: '#e0e0e0',
             fillOpacity: 0.8,
             color: '#666',
             weight: 2
+        };
+
+        const marker = L.circleMarker(zone.coords, {
+            pane: 'caribbeanZones',
+            radius: 8,
+            ...defaultStyle
         }).addTo(map);
 
         marker.adminUnitID = zone.code;
@@ -231,6 +301,7 @@ function addCaribbeanCoastalZones() {
         marker.on('mouseover', (e) => highlightFeature(e));
         marker.on('mouseout', (e) => resetHighlight(e));
 
+        marker.defaultStyle = defaultStyle;
         mapLayers[zone.code] = marker;
     });
 }
@@ -299,9 +370,10 @@ function handleExplorationClick(adminUnitID) {
     const data = getZoneData(adminUnitID); // <--- MODIFICADO (data)
 
     if (data) { // <--- MODIFICADO (data)
+        highlightExplorationZone(data.key);
         displayZoneInfo(data); // <--- MODIFICADO (data)
     } else {
-        document.getElementById('zoneInfo').innerHTML = 
+        document.getElementById('zoneInfo').innerHTML =
             '<p style="color: #999;">Esta región no está incluida en los datos lingüísticos.</p>';
     }
 }
@@ -335,8 +407,17 @@ function displayZoneInfo(data) { // <--- MODIFICADO (data)
     }
     featuresHTML += '</div>';
 
+    const descriptionSection = data.descripcion_detallada ? `
+        <div class="info-section">
+            <div class="info-label">Descripción Detallada</div>
+            <div class="info-content rich-text">${data.descripcion_detallada}</div>
+        </div>
+    ` : '';
+
     const html = `
-        <div class="zone-name">${data.nombre}</div> <div class="info-section">
+        <div class="zone-name">${data.nombre}</div>
+        ${descriptionSection}
+        <div class="info-section">
             <div class="info-label">Rasgos Fonológicos y Gramaticales</div>
             <div class="info-content">
                 ${featuresHTML}
@@ -458,15 +539,9 @@ function applyFilter(featureKey) {
 
 function resetMapColors() {
     for (const layer of Object.values(mapLayers)) {
-        if (layer.setStyle) {
-            layer.setStyle({
-                fillColor: '#e0e0e0',
-                fillOpacity: 0.6,
-                color: '#666',
-                weight: 1
-            });
-        }
+        applyDefaultStyle(layer);
     }
+    activeExplorationZone = null;
 }
 
 // ============================================
@@ -540,13 +615,8 @@ function handleChallengeClick(adminUnitID) {
         // Color back to neutral
         for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
-            if (layer && layer.setStyle) {
-                layer.setStyle({
-                    fillColor: '#e0e0e0',
-                    fillOpacity: 0.6,
-                    color: '#666',
-                    weight: 1
-                });
+            if (layer) {
+                applyDefaultStyle(layer);
             }
         }
     } else {
