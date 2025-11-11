@@ -3,60 +3,70 @@
     "norte_espana": {
       "nombre": "España (Norte-Centro)",
       "admin_units": ["ES-GA", "ES-AS", "ES-CB", "ES-PV", "ES-NC", "ES-RI", "ES-CL", "ES-MD", "ES-CM", "ES-AR", "ES-CT", "ES-VC"],
+      "descripcion_detallada": "<p>Esta zona se considera la cuna del castellano y tiende a ser fonéticamente más conservadora. <strong>Fonéticamente</strong>, es la principal zona que mantiene la <strong>distinción</strong> entre /s/ (sopa) y /&theta;/ (caza, cena), por lo que <strong>no hay seseo</strong>. Generalmente, no se aspira la /s/ y se conserva la /d/ intervocálica. El <strong>yeísmo es variable</strong>; muchas zonas rurales aún distinguen 'y'/'ll'.</p><p><strong>Gramaticalmente</strong>, es conocida por el uso de <strong>'vosotros'</strong> informal (opuesto a 'ustedes') y la preferencia clara del <strong>pretérito perfecto compuesto</strong> ('hoy he comido') sobre el indefinido ('hoy comí') para acciones recientes. También es común el <strong>leísmo</strong> (uso de 'le' por 'lo').</p><p><strong>Variaciones Internas:</strong> Aunque esta zona está marcada por el uso del pretérito perfecto, regiones como Galicia (influenciada por el gallego) prefieren el indefinido, de forma similar a Hispanoamérica.</p>",
       "features": { "seseo": 0, "yeismo": 2, "aspiracion_s": 0, "aspiracion_j": 0, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 0, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 0, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 0, "verbos_reflexivos": 0 },
       "sustrato": "Vasco, Celta, Íbero", "adstrato": "Árabe, Galicismo"
     },
     "sur_espana": {
       "nombre": "España (Sur: Andaluz/Canario)",
       "admin_units": ["ES-AN", "ES-EX", "ES-MC", "ES-CN", "ES-IB", "ES-CE", "ES-ML"],
+      "descripcion_detallada": "<p>Esta zona es fundamental, ya que es la base principal del español en América (la 'tesis andalucista'). <strong>Fonéticamente</strong>, es muy innovadora. Presenta <strong>seseo</strong> generalizado (especialmente en Canarias, que es 100% seseante) o 'ceceo' en partes de Andalucía. Los rasgos más distintivos son la <strong>aspiración de /s/</strong> al final de sílaba ('ehtoh' por 'estos') y la <strong>aspiración de /j/</strong> ('caha' por 'caja'). También es común la <strong>pérdida de la /d/</strong> intervocálica ('cantao' por 'cantado').</p><p><strong>Gramaticalmente</strong>, prefiere el <strong>pretérito indefinido</strong> ('hoy comí') y usa <strong>'ustedes'</strong> para el plural informal, compartiendo ambos rasgos con toda Hispanoamérica.</p><p><strong>Variaciones Internas:</strong> El 'canario' (hablado en las Islas Canarias) es muy similar al español caribeño. El 'andaluz' (hablado en Andalucía) es más diverso, presentando zonas de seseo y zonas de ceceo.</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 2, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 0, "verbos_reflexivos": 0 },
       "sustrato": "Guanche (Canarias)", "adstrato": "Árabe"
     },
     "mexico_ca": {
       "nombre": "México y Centroamérica",
       "admin_units": ["MX", "GT", "SV", "HN", "NI", "CR", "PA"],
+      "descripcion_detallada": "<p>Esta es una zona dialectal muy extensa y poblada, con una fuerte presencia histórica de sustratos como el <strong>Náhuatl</strong> y el <strong>Maya</strong>. <strong>Fonéticamente</strong>, hay <strong>seseo</strong> y <strong>yeísmo</strong>. Un rasgo distintivo es el debilitamiento o pérdida de vocales átonas ('ants' por 'antes'). La aspiración de /s/ es variable, dándose más en las costas.</p><p><strong>Gramaticalmente</strong>, esta zona está dividida por el pronombre de segunda persona: <strong>México usa 'tú' (tuteo)</strong>, mientras que la mayor parte de <strong>Centroamérica usa 'vos' (voseo)</strong> o una alternancia de ambos. En Costa Rica, un rasgo único es el <strong>ustedeo</strong> (tratar de 'usted' en confianza). <strong>Léxicamente</strong>, es la zona con más influencia viva del Náhuatl (palabras como 'aguacate', 'chocolate', 'tomate', 'cuate', 'chile', etc.).</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 2, "aspiracion_j": 2, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 1, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Náhuatl, Maya", "adstrato": "Inglés"
     },
     "caribe": {
       "nombre": "Español Caribeño",
       "admin_units": ["CU", "DO", "PR"],
+      "descripcion_detallada": "<p>Esta zona (Cuba, Rep. Dominicana, Puerto Rico) comparte muchos rasgos con el español del sur de España y Canarias. <strong>Fonéticamente</strong>, es conocido por su ritmo rápido y la fuerte <strong>aspiración o pérdida de /s/</strong> ('e'tamo' por 'estamos'). También es común la <strong>pérdida de /d/</strong> ('verdá' por 'verdad') y la <strong>aspiración de /j/</strong>.</p><p><strong>Gramaticalmente</strong>, su rasgo más famoso es el uso del <strong>pronombre sujeto obligatorio</strong> (ej. '¿Qué tú quieres?' en lugar de '¿Qué quieres?'). <strong>Léxicamente</strong>, tiene influencias de lenguas africanas ('bachata', 'bemba') y arahuacas ('hamaca', 'canoa').</p><p><strong>Variaciones Internas:</strong> El <strong>lambdacismo</strong> (cambio de /r/ por /l/, 'puelta' por 'puerta') es variable y se asocia al habla popular de Puerto Rico. En Rep. Dominicana, se da la <strong>vocalización</strong> ('béide' por 'verde'). En Puerto Rico también se da la <strong>velarización</strong> de la 'r' (un sonido 'j' en 'Puejto Rico'). En Cuba, es más común la <strong>asimilación</strong> ('cobbáta' por 'corbata').</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 1, "queismo": 1, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Arahuaca, Caribe", "adstrato": "Lenguas Africanas, Inglés (PR)"
     },
     "caribe_colombia": {
       "nombre": "Español Caribeño (Costa de Colombia)",
       "admin_units": ["CO-CAR"],
+      "descripcion_detallada": "<p>Forma parte de la gran zona caribeña y comparte sus rasgos principales. <strong>Fonéticamente</strong>, se caracteriza por la <strong>aspiración de /s/</strong> ('cohta' por 'costa') y la <strong>pérdida de /d/</strong> intervocálica ('cantao'). Se diferencia claramente del español andino (del interior de Colombia, como Bogotá) por su ritmo más rápido y su fonética más relajada. <strong>Gramaticalmente</strong>, coexiste el <strong>tuteo</strong> (uso de 'tú') con el <strong>ustedeo</strong> de confianza en algunas áreas.</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 1, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 1, "queismo": 1, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Lenguas Chibchas y Caribe", "adstrato": "Lenguas Africanas, Inglés costeño"
     },
     "caribe_venezuela": {
       "nombre": "Español Caribeño (Litoral de Venezuela)",
       "admin_units": ["VE-CAR"],
+      "descripcion_detallada": "<p>Pertenece a la zona caribeña, diferenciándose del español andino hablado en las montañas del país. <strong>Fonéticamente</strong>, presenta los rasgos caribeños: <strong>aspiración de /s/</strong> y <strong>pérdida de /d/</strong>. <strong>Gramaticalmente</strong>, es una zona predominantemente <strong>tuteante</strong> (uso de 'tú'). También muestra la tendencia caribeña a usar <strong>pronombres sujeto</strong> ('Yo voy' en lugar de 'Voy') con más frecuencia.</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 2, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 1, "queismo": 1, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Lenguas Caribe y Arawak", "adstrato": "Lenguas Africanas, Inglés de las Antillas"
     },
     "andino": {
       "nombre": "Español Andino",
       "admin_units": ["VE", "CO", "EC", "PE", "BO"],
+      "descripcion_detallada": "<p>Abarca las tierras altas (la cordillera) de Venezuela, Colombia, Ecuador, Perú y Bolivia. Es una zona de fuerte contacto con lenguas indígenas como el <strong>Quechua</strong> y el <strong>Aimara</strong>. <strong>Fonéticamente</strong>, es muy conservador: la /s/ se pronuncia claramente y <strong>no hay aspiración</strong>. El <strong>yeísmo es variable</strong>; muchas zonas, por influencia del Quechua, aún <strong>distinguen 'll' y 'y'</strong> (no hay yeísmo).</p><p><strong>Gramaticalmente</strong>, el <strong>ustedeo</strong> (uso de 'usted' en confianza) es muy común, especialmente en Colombia y Ecuador. Por influencia del Quechua, es frecuente el <strong>leísmo</strong> y la <strong>posposición de posesivos</strong> ('la casa de nosotros' en vez de 'nuestra casa'). <strong>Léxicamente</strong>, usa muchos indigenismos como 'papa' (patata), 'choclo' (maíz) o 'palta' (aguacate).</p>",
       "features": { "seseo": 1, "yeismo": 2, "aspiracion_s": 0, "aspiracion_j": 0, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 1, "uso_tu_vos": 1, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Quechua, Aimara", "adstrato": ""
     },
     "austral": {
-      "nombre": "Español Austral",
+      "nombre": "Español Austral (Rioplatense)",
       "admin_units": ["AR", "UY", "PY"],
+      "descripcion_detallada": "<p>Esta zona (Argentina, Uruguay) tiene una identidad muy marcada por la inmigración masiva de italianos. <strong>Fonéticamente</strong>, su rasgo único es el <strong>yeísmo rehilado</strong>, donde 'y'/'ll' suenan como 'sh' o 'zh' ('ca-she' por 'calle'). También hay <strong>aspiración de /s/</strong> ('lah mesah'). La entonación está muy influida por el napolitano.</p><p><strong>Gramaticalmente</strong>, el rasgo dominante es el <strong>voseo</strong> ('vos' en lugar de 'tú') con su conjugación propia y regular ('vos tenés', 'vos comés', '¡andá!'). <strong>Léxicamente</strong>, hay una enorme influencia del italiano ('laburo', 'pibe') y del <strong>lunfardo</strong>, una jerga de Buenos Aires ('bacan', 'fiaca').</p><p><strong>Variaciones Internas:</strong> Paraguay, aunque incluido en la zona, es un caso especial de <strong>bilingüismo</strong> con el <strong>Guaraní</strong>, que es cooficial y hablado por una gran parte de la población.</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 0, "perdida_d": 1, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 0, "uso_tu_vos": 0, "uso_vos": 1, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Guaraní", "adstrato": "Italiano"
     },
     "chile": {
       "nombre": "Español de Chile",
       "admin_units": ["CL"],
+      "descripcion_detallada": "<p>Considerada una de las variedades más distintivas y difíciles de entender para otros hispanos. Su desarrollo se vio marcado por el aislamiento geográfico (desierto, océano y cordillera). <strong>Fonéticamente</strong>, la <strong>aspiración de /s/</strong> es muy fuerte, llegando a desaparecer ('loh ojo' por 'los ojos'). La /j/ también se aspira ('ca-ha').</p><p><strong>Gramaticalmente</strong>, presenta un <strong>voseo</strong> único que mezcla 'tú' con formas verbales de 'vosotros' modificadas ('tú cantái', 'tú comís', '¿cachái?'). También es una zona con alta frecuencia de <strong>dequeísmo</strong> ('pienso de que') y <strong>queísmo</strong> ('me alegro que vengas'). <strong>Léxicamente</strong>, tiene muchas palabras de origen <strong>Mapudungun</strong> ('guata', 'pololo') y una gran cantidad de léxico local ('bacán', 'cahuín', 'fome', 'huevón').</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 1, "aspiracion_j": 1, "perdida_d": 1, "lambdacismo": 0, "ustedeo": 1, "uso_tu": 0, "uso_tu_vos": 2, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 1, "dequeismo": 1, "adj_por_adv": 1, "verbos_reflexivos": 1 },
       "sustrato": "Mapudungun, Quechua", "adstrato": ""
     },
     "otros": {
-      "nombre": "Otras Zonas",
+      "nombre": "Otras Zonas (Filipinas, Guinea Ecuatorial)",
       "admin_units": ["GQ", "PH"],
+      "descripcion_detallada": "<p>Estas zonas tienen historias únicas. <strong>Guinea Ecuatorial (GQ)</strong> es el único país de África con español como lengua oficial; su español está influenciado por lenguas bantúes y criollos. <strong>Filipinas (PH)</strong> tuvo el español como lengua oficial por siglos. Hoy, aunque pocos lo hablan como primera lengua, ha dejado una huella enorme en el léxico de las lenguas locales como el Tagalo. Ambas zonas son seseantes y yeístas, pero no comparten los rasgos fonéticos innovadores (como la aspiración) de América.</p>",
       "features": { "seseo": 1, "yeismo": 1, "aspiracion_s": 0, "aspiracion_j": 0, "perdida_d": 0, "lambdacismo": 0, "ustedeo": 0, "uso_tu": 1, "uso_tu_vos": 0, "uso_vos": 0, "indefinido_vs_perfecto": 1, "pronombre_sujeto": 0, "queismo": 0, "dequeismo": 0, "adj_por_adv": 0, "verbos_reflexivos": 0 },
       "sustrato": "Lenguas Ecuatoguineanas, Tagalo", "adstrato": ""
     }
