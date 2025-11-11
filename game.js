@@ -8,9 +8,19 @@ let map;
 let mapLayers = {};
 let currentMode = 'exploration';
 let currentQuestion = null;
-let selectedZones = new Set();
+let challengeSelections = new Map();
 let adminUnitToZone = {}; // Reverse lookup cache
 let activeExplorationZone = null;
+
+// Challenge interaction helpers
+let challengeClickTimer = null;
+let pendingChallengeAdminUnit = null;
+const CHALLENGE_DOUBLE_CLICK_DELAY = 250;
+
+// Zone grouping (e.g. parent zone that should include sub-zones)
+const zoneGroups = {
+    'caribe': ['caribe_colombia', 'caribe_venezuela']
+};
 
 // ============================================
 // INITIALIZATION
@@ -71,6 +81,9 @@ function getDefaultStyle(layer) {
 function applyDefaultStyle(layer) {
     if (layer && layer.setStyle) {
         layer.setStyle(getDefaultStyle(layer));
+        if (layer._hoverStyleBackup) {
+            layer._hoverStyleBackup = null;
+        }
     }
 }
 
@@ -92,7 +105,8 @@ function highlightExplorationZone(zoneKey) {
 
     activeExplorationZone = zoneKey;
 
-    for (const adminUnit of zone.admin_units) {
+    const adminUnits = getZoneAdminUnits(zoneKey);
+    for (const adminUnit of adminUnits) {
         const layer = mapLayers[adminUnit];
         if (layer && layer.setStyle) {
             const baseStyle = getDefaultStyle(layer);
@@ -128,6 +142,25 @@ function getZoneData(adminUnitID) {
     return null;
 }
 
+function getZoneAdminUnits(zoneKey) {
+    const zone = zoneData[zoneKey];
+    if (!zone) {
+        return [];
+    }
+
+    const adminUnits = new Set(zone.admin_units || []);
+    const linkedZones = zoneGroups[zoneKey] || [];
+
+    for (const linkedZoneKey of linkedZones) {
+        const linkedZone = zoneData[linkedZoneKey];
+        if (linkedZone && Array.isArray(linkedZone.admin_units)) {
+            linkedZone.admin_units.forEach(unit => adminUnits.add(unit));
+        }
+    }
+
+    return Array.from(adminUnits);
+}
+
 // ============================================
 // MAP INITIALIZATION
 // ============================================
@@ -140,6 +173,10 @@ function initializeMap() {
         minZoom: 2,
         maxZoom: 6
     });
+
+    if (map.doubleClickZoom) {
+        map.doubleClickZoom.disable();
+    }
 
     // Add base tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -313,6 +350,31 @@ function addCaribbeanCoastalZones() {
 function handleMapClick(e, adminUnitID) {
     L.DomEvent.stopPropagation(e);
 
+    if (currentMode === 'challenge') {
+        if (challengeClickTimer) {
+            if (pendingChallengeAdminUnit === adminUnitID) {
+                clearTimeout(challengeClickTimer);
+                challengeClickTimer = null;
+                pendingChallengeAdminUnit = null;
+                handleChallengeDoubleClick(adminUnitID);
+                return;
+            } else {
+                clearTimeout(challengeClickTimer);
+                handleChallengeSingleClick(pendingChallengeAdminUnit);
+                challengeClickTimer = null;
+                pendingChallengeAdminUnit = null;
+            }
+        }
+
+        pendingChallengeAdminUnit = adminUnitID;
+        challengeClickTimer = setTimeout(() => {
+            handleChallengeSingleClick(pendingChallengeAdminUnit);
+            challengeClickTimer = null;
+            pendingChallengeAdminUnit = null;
+        }, CHALLENGE_DOUBLE_CLICK_DELAY);
+        return;
+    }
+
     switch(currentMode) {
         case 'exploration':
             handleExplorationClick(adminUnitID);
@@ -320,9 +382,6 @@ function handleMapClick(e, adminUnitID) {
         case 'filter':
             // In filter mode, clicks just show info
             handleExplorationClick(adminUnitID);
-            break;
-        case 'challenge':
-            handleChallengeClick(adminUnitID);
             break;
     }
 }
@@ -356,6 +415,21 @@ function highlightFeature(e) {
 
 function resetHighlight(e) {
     const layer = e.target;
+    if (!layer) {
+        return;
+    }
+
+    if (currentMode === 'exploration' && activeExplorationZone) {
+        const adminUnitID = layer.adminUnitID;
+        if (adminUnitID) {
+            const activeUnits = getZoneAdminUnits(activeExplorationZone);
+            if (activeUnits.includes(adminUnitID)) {
+                layer._hoverStyleBackup = null;
+                return;
+            }
+        }
+    }
+
     if (currentMode !== 'challenge' && layer.setStyle && layer._hoverStyleBackup) {
         layer.setStyle(layer._hoverStyleBackup);
         layer._hoverStyleBackup = null;
@@ -486,7 +560,8 @@ function applyFilter(featureKey) {
         }
 
         // Color all admin units in this zone
-        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
+        const adminUnits = getZoneAdminUnits(zoneKey);
+        for (const adminUnit of adminUnits) { // <--- MODIFICADO (data)
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -550,7 +625,12 @@ function resetMapColors() {
 
 function generateQuestion() {
     // Reset state
-    selectedZones.clear();
+    challengeSelections.clear();
+    if (challengeClickTimer) {
+        clearTimeout(challengeClickTimer);
+        challengeClickTimer = null;
+        pendingChallengeAdminUnit = null;
+    }
     resetMapColors();
     document.getElementById('resultMessage').innerHTML = '';
     document.getElementById('challengeInfo').innerHTML = '';
@@ -567,15 +647,19 @@ function generateQuestion() {
     const randomFeature = features[Math.floor(Math.random() * features.length)];
     const featureLabel = featureDescriptions[randomFeature] ? featureDescriptions[randomFeature].nombre : randomFeature;
 
-    // Find all zones with this feature (value = 1)
-    const correctZones = [];
+    // Find all zones with this feature
+    const presentZones = [];
+    const variableZones = [];
     for (const [zoneKey, data] of Object.entries(zoneData)) { // <--- MODIFICADO (zoneData)
-        if (data.features[randomFeature] === 1) { // <--- MODIFICADO (data)
-            correctZones.push(zoneKey);
+        const value = data.features[randomFeature];
+        if (value === 1) {
+            presentZones.push(zoneKey);
+        } else if (value === 2) {
+            variableZones.push(zoneKey);
         }
     }
 
-    if (correctZones.length === 0) {
+    if (presentZones.length === 0 && variableZones.length === 0) {
         // Try another feature
         generateQuestion();
         return;
@@ -584,71 +668,156 @@ function generateQuestion() {
     currentQuestion = {
         feature: randomFeature,
         featureLabel: featureLabel, // <--- MODIFICADO
-        correctZones: correctZones
+        presentZones: presentZones,
+        variableZones: variableZones
     };
 
     const questionHTML = `
         <div class="question-box">
             <div class="question-text">Selecciona todas las zonas que tienen:</div>
             <div class="question-feature">${currentQuestion.featureLabel}</div>
+            <div class="challenge-hint" style="margin-top: 8px; font-size: 0.85em; color: #4a5568;">
+                Clic = presente · Doble clic = variable · Clic nuevamente para limpiar
+            </div>
         </div>
     `;
 
     document.getElementById('questionBox').innerHTML = questionHTML;
-}
-
-function handleChallengeClick(adminUnitID) {
-    if (!currentQuestion) {
-        return;
-    }
-
-    const data = getZoneData(adminUnitID); // <--- MODIFICADO (data)
-    if (!data) { // <--- MODIFICADO (data)
-        return;
-    }
-
-    const zoneKey = data.key; // <--- MODIFICADO (data)
-
-    // Toggle selection
-    if (selectedZones.has(zoneKey)) {
-        selectedZones.delete(zoneKey);
-        // Color back to neutral
-        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
-            const layer = mapLayers[adminUnit];
-            if (layer) {
-                applyDefaultStyle(layer);
-            }
-        }
-    } else {
-        selectedZones.add(zoneKey);
-        // Color as selected
-        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
-            const layer = mapLayers[adminUnit];
-            if (layer && layer.setStyle) {
-                layer.setStyle({
-                    fillColor: '#667eea',
-                    fillOpacity: 0.7,
-                    color: '#333',
-                    weight: 2
-                });
-            }
-        }
-    }
-
-    // Show selection info
     displaySelectionInfo();
 }
 
+function handleChallengeSingleClick(adminUnitID) {
+    if (!adminUnitID || !currentQuestion) {
+        return;
+    }
+
+    const data = getZoneData(adminUnitID);
+    if (!data) {
+        return;
+    }
+
+    const zoneKey = data.key;
+    const currentState = challengeSelections.get(zoneKey);
+
+    if (currentState === 'present') {
+        challengeSelections.delete(zoneKey);
+    } else {
+        challengeSelections.set(zoneKey, 'present');
+    }
+
+    updateChallengeZoneStyle(zoneKey);
+    displaySelectionInfo();
+}
+
+function handleChallengeDoubleClick(adminUnitID) {
+    if (!adminUnitID || !currentQuestion) {
+        return;
+    }
+
+    const data = getZoneData(adminUnitID);
+    if (!data) {
+        return;
+    }
+
+    const zoneKey = data.key;
+    const currentState = challengeSelections.get(zoneKey);
+
+    if (currentState === 'variable') {
+        challengeSelections.delete(zoneKey);
+    } else {
+        challengeSelections.set(zoneKey, 'variable');
+    }
+
+    updateChallengeZoneStyle(zoneKey);
+    displaySelectionInfo();
+}
+
+function updateChallengeZoneStyle(zoneKey) {
+    const data = zoneData[zoneKey];
+    if (!data) {
+        return;
+    }
+
+    const state = challengeSelections.get(zoneKey) || null;
+    const adminUnits = getZoneAdminUnits(zoneKey);
+
+    let style;
+    if (state === 'present') {
+        style = {
+            fillColor: '#667eea',
+            fillOpacity: 0.7,
+            color: '#333',
+            weight: 2
+        };
+    } else if (state === 'variable') {
+        style = {
+            fillColor: '#ecc94b',
+            fillOpacity: 0.75,
+            color: '#b7791f',
+            weight: 2
+        };
+    }
+
+    for (const adminUnit of adminUnits) {
+        const layer = mapLayers[adminUnit];
+        if (!layer) {
+            continue;
+        }
+
+        if (style) {
+            layer.setStyle(style);
+            if (layer.bringToFront) {
+                layer.bringToFront();
+            }
+        } else {
+            applyDefaultStyle(layer);
+        }
+    }
+}
+
 function displaySelectionInfo() {
-    const selectedNames = Array.from(selectedZones).map(key => zoneData[key].nombre); // <--- MODIFICADO (zoneData)
-    const html = `
+    const presentNames = [];
+    const variableNames = [];
+
+    challengeSelections.forEach((state, key) => {
+        const zone = zoneData[key];
+        if (!zone) {
+            return;
+        }
+        if (state === 'present') {
+            presentNames.push(zone.nombre);
+        } else if (state === 'variable') {
+            variableNames.push(zone.nombre);
+        }
+    });
+
+    let html = `
         <div class="info-section">
-            <div class="info-label">Zonas Seleccionadas (${selectedZones.size})</div>
+            <div class="info-label">Zonas Seleccionadas (${challengeSelections.size})</div>
             <div class="info-content">
-                ${selectedNames.length > 0 ? selectedNames.join(', ') : 'Ninguna'}
+                ${(presentNames.length + variableNames.length) > 0 ? 'Consulta el detalle debajo.' : 'Ninguna'}
             </div>
         </div>
     `;
+
+    if (presentNames.length > 0) {
+        html += `
+            <div class="info-section">
+                <div class="info-label" style="color: #4c51bf;">✓ Presente</div>
+                <div class="info-content">${presentNames.join(', ')}</div>
+            </div>
+        `;
+    }
+
+    if (variableNames.length > 0) {
+        html += `
+            <div class="info-section">
+                <div class="info-label" style="color: #b7791f;">~ Variable</div>
+                <div class="info-content">${variableNames.join(', ')}</div>
+            </div>
+        `;
+    }
+
     document.getElementById('challengeInfo').innerHTML = html;
 }
 
@@ -657,37 +826,62 @@ function checkAnswer() {
         return;
     }
 
-    const correctZones = new Set(currentQuestion.correctZones);
-    const userZones = selectedZones;
+    const presentCorrect = new Set(currentQuestion.presentZones || []);
+    const variableCorrect = new Set(currentQuestion.variableZones || []);
+    const userPresent = new Set();
+    const userVariable = new Set();
 
-    // Calculate correct and incorrect
-    const correctSelections = new Set();
-    const missedZones = new Set();
-    const wrongSelections = new Set();
+    challengeSelections.forEach((state, zoneKey) => {
+        if (state === 'present') {
+            userPresent.add(zoneKey);
+        } else if (state === 'variable') {
+            userVariable.add(zoneKey);
+        }
+    });
 
-    for (const zone of correctZones) {
-        if (userZones.has(zone)) {
-            correctSelections.add(zone);
-        } else {
-            missedZones.add(zone);
+    const missedPresent = new Set();
+    const missedVariable = new Set();
+    const wrongPresent = new Set();
+    const wrongVariable = new Set();
+
+    for (const zone of presentCorrect) {
+        if (!userPresent.has(zone)) {
+            missedPresent.add(zone);
         }
     }
 
-    for (const zone of userZones) {
-        if (!correctZones.has(zone)) {
-            wrongSelections.add(zone);
+    for (const zone of variableCorrect) {
+        if (!userVariable.has(zone)) {
+            missedVariable.add(zone);
         }
     }
 
-    const isCorrect = wrongSelections.size === 0 && missedZones.size === 0;
+    for (const zone of userPresent) {
+        if (!presentCorrect.has(zone)) {
+            wrongPresent.add(zone);
+        }
+    }
+
+    for (const zone of userVariable) {
+        if (!variableCorrect.has(zone)) {
+            wrongVariable.add(zone);
+        }
+    }
+
+    const isCorrect = (
+        wrongPresent.size === 0 &&
+        wrongVariable.size === 0 &&
+        missedPresent.size === 0 &&
+        missedVariable.size === 0
+    );
 
     // Color the map
     resetMapColors();
 
-    // Color correct zones green
-    for (const zoneKey of correctZones) {
-        const data = zoneData[zoneKey]; // <--- MODIFICADO (zoneData)
-        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
+    // Color present zones green
+    for (const zoneKey of presentCorrect) {
+        const adminUnits = getZoneAdminUnits(zoneKey);
+        for (const adminUnit of adminUnits) {
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -696,14 +890,37 @@ function checkAnswer() {
                     color: '#2f855a',
                     weight: 2
                 });
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
+            }
+        }
+    }
+
+    // Color variable zones gold
+    for (const zoneKey of variableCorrect) {
+        const adminUnits = getZoneAdminUnits(zoneKey);
+        for (const adminUnit of adminUnits) {
+            const layer = mapLayers[adminUnit];
+            if (layer && layer.setStyle) {
+                layer.setStyle({
+                    fillColor: '#ecc94b',
+                    fillOpacity: 0.75,
+                    color: '#b7791f',
+                    weight: 2
+                });
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
             }
         }
     }
 
     // Color wrong selections red
-    for (const zoneKey of wrongSelections) {
-        const data = zoneData[zoneKey]; // <--- MODIFICADO (zoneData)
-        for (const adminUnit of data.admin_units) { // <--- MODIFICADO (data)
+    const wrongAll = new Set([...wrongPresent, ...wrongVariable]);
+    for (const zoneKey of wrongAll) {
+        const adminUnits = getZoneAdminUnits(zoneKey);
+        for (const adminUnit of adminUnits) {
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
                 layer.setStyle({
@@ -712,6 +929,9 @@ function checkAnswer() {
                     color: '#c53030',
                     weight: 2
                 });
+                if (layer.bringToFront) {
+                    layer.bringToFront();
+                }
             }
         }
     }
@@ -721,22 +941,64 @@ function checkAnswer() {
     if (isCorrect) {
         resultHTML = '<div class="result-message success">¡Correcto! Has identificado todas las zonas.</div>';
     } else {
-        const correctNames = Array.from(correctZones).map(k => zoneData[k].nombre); // <--- MODIFICADO (zoneData)
-        const wrongNames = Array.from(wrongSelections).map(k => zoneData[k].nombre); // <--- MODIFICADO (zoneData)
+        const presentNames = Array.from(presentCorrect).map(k => zoneData[k]?.nombre).filter(Boolean);
+        const variableNames = Array.from(variableCorrect).map(k => zoneData[k]?.nombre).filter(Boolean);
+        const wrongPresentNames = Array.from(wrongPresent).map(k => zoneData[k]?.nombre).filter(Boolean);
+        const wrongVariableNames = Array.from(wrongVariable).map(k => zoneData[k]?.nombre).filter(Boolean);
+        const missedPresentNames = Array.from(missedPresent).map(k => zoneData[k]?.nombre).filter(Boolean);
+        const missedVariableNames = Array.from(missedVariable).map(k => zoneData[k]?.nombre).filter(Boolean);
 
         resultHTML = '<div class="result-message error">Respuesta incorrecta</div>';
-        resultHTML += `
-            <div class="info-section">
-                <div class="info-label" style="color: #48bb78;">✓ Respuestas correctas:</div>
-                <div class="info-content">${correctNames.join(', ')}</div>
-            </div>
-        `;
-
-        if (wrongNames.length > 0) {
+        if (presentNames.length > 0) {
             resultHTML += `
                 <div class="info-section">
-                    <div class="info-label" style="color: #f56565;">✗ Selecciones incorrectas:</div>
-                    <div class="info-content">${wrongNames.join(', ')}</div>
+                    <div class="info-label" style="color: #48bb78;">✓ Presente en:</div>
+                    <div class="info-content">${presentNames.join(', ')}</div>
+                </div>
+            `;
+        }
+
+        if (variableNames.length > 0) {
+            resultHTML += `
+                <div class="info-section">
+                    <div class="info-label" style="color: #b7791f;">~ Variable en:</div>
+                    <div class="info-content">${variableNames.join(', ')}</div>
+                </div>
+            `;
+        }
+
+        if (wrongPresentNames.length > 0) {
+            resultHTML += `
+                <div class="info-section">
+                    <div class="info-label" style="color: #c53030;">✗ Marcaste como presente:</div>
+                    <div class="info-content">${wrongPresentNames.join(', ')}</div>
+                </div>
+            `;
+        }
+
+        if (wrongVariableNames.length > 0) {
+            resultHTML += `
+                <div class="info-section">
+                    <div class="info-label" style="color: #c05621;">✗ Marcaste como variable:</div>
+                    <div class="info-content">${wrongVariableNames.join(', ')}</div>
+                </div>
+            `;
+        }
+
+        if (missedPresentNames.length > 0) {
+            resultHTML += `
+                <div class="info-section">
+                    <div class="info-label" style="color: #2b6cb0;">• Te faltó marcar (presente):</div>
+                    <div class="info-content">${missedPresentNames.join(', ')}</div>
+                </div>
+            `;
+        }
+
+        if (missedVariableNames.length > 0) {
+            resultHTML += `
+                <div class="info-section">
+                    <div class="info-label" style="color: #975a16;">• Te faltó marcar (variable):</div>
+                    <div class="info-content">${missedVariableNames.join(', ')}</div>
                 </div>
             `;
         }
@@ -785,7 +1047,12 @@ function switchMode(mode) {
 
     // Reset state
     resetMapColors();
-    selectedZones.clear();
+    challengeSelections.clear();
+    if (challengeClickTimer) {
+        clearTimeout(challengeClickTimer);
+        challengeClickTimer = null;
+        pendingChallengeAdminUnit = null;
+    }
     currentQuestion = null;
 
     if (mode === 'exploration') {
