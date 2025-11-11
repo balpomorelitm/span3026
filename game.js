@@ -165,9 +165,7 @@ function addSpanishRegions() {
         // This is a simplified version - ideally load real region GeoJSON
         const regions = [
             { code: 'ES-AN', name: 'Andalucía', coords: [37.5, -4.5] },
-            { code: 'ES-GA', name: 'Galicia', coords: [42.8, -8.0] },
             { code: 'ES-MD', name: 'Madrid', coords: [40.4, -3.7] },
-            { code: 'ES-CT', name: 'Cataluña', coords: [41.8, 1.5] },
             { code: 'ES-CN', name: 'Canarias', coords: [28.3, -16.5] }
         ];
 
@@ -203,34 +201,32 @@ function addCaribbeanCoastalZones() {
         {
             code: 'CO-CAR',
             name: 'Costa Caribe de Colombia',
-            coords: [10.9, -75.1],
-            radius: 250000
+            coords: [10.9, -75.1]
         },
         {
             code: 'VE-CAR',
             name: 'Litoral Caribe de Venezuela',
-            coords: [10.4, -66.8],
-            radius: 220000
+            coords: [10.4, -66.8]
         }
     ];
 
     coastalZones.forEach(zone => {
-        const circle = L.circle(zone.coords, {
+        const marker = L.circleMarker(zone.coords, {
             pane: 'caribbeanZones',
-            radius: zone.radius,
-            fillColor: '#ffd166',
-            fillOpacity: 0.45,
-            color: '#e76f51',
+            radius: 8,
+            fillColor: '#e0e0e0',
+            fillOpacity: 0.8,
+            color: '#666',
             weight: 2
         }).addTo(map);
 
-        circle.adminUnitID = zone.code;
-        circle.bindTooltip(zone.name);
-        circle.on('click', (e) => handleMapClick(e, zone.code));
-        circle.on('mouseover', (e) => highlightFeature(e));
-        circle.on('mouseout', (e) => resetHighlight(e));
+        marker.adminUnitID = zone.code;
+        marker.bindTooltip(zone.name);
+        marker.on('click', (e) => handleMapClick(e, zone.code));
+        marker.on('mouseover', (e) => highlightFeature(e));
+        marker.on('mouseout', (e) => resetHighlight(e));
 
-        mapLayers[zone.code] = circle;
+        mapLayers[zone.code] = marker;
     });
 }
 
