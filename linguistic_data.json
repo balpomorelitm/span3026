@@ -31,7 +31,7 @@
       "ES-AN", "ES-EX", "ES-MC", "ES-CN", "ES-IB", "ES-CE", "ES-ML"
     ],
     "features": {
-      "seseo": 2,
+      "seseo": 1,
       "yeismo": 1,
       "aspiracion_s": 1,
       "aspiracion_j": 1,
@@ -111,7 +111,7 @@
       "lambdacismo": 2,
       "ustedeo": 1,
       "uso_tu": 1,
-      "uso_tu_vos": 0,
+      "uso_tu_vos": 1,
       "uso_vos": 0,
       "indefinido_vs_perfecto": 1,
       "pronombre_sujeto": 1,
@@ -179,7 +179,7 @@
       "yeismo": 1,
       "aspiracion_s": 1,
       "aspiracion_j": 0,
-      "perdida_d": 0,
+      "perdida_d": 1,
       "lambdacismo": 0,
       "ustedeo": 1,
       "uso_tu": 0,
