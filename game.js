@@ -20,6 +20,12 @@ let identifyState = {
 
 let currentPhrase = null;
 let phraseSolved = false;
+let quizState = {
+    deck: [],
+    used: [],
+    current: null,
+    answered: false
+};
 
 const adminUnitLabels = {
     'AR': 'Argentina', 'UY': 'Uruguay', 'PY': 'Paraguay',
@@ -96,6 +102,1048 @@ const phraseAnswerLabels = {
     'austral': 'Río de la Plata (Argentina, Uruguay)'
 };
 
+function shuffleArray(list) {
+    const array = [...list];
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+const quizQuestions = [
+    {
+        id: 1,
+        prompt: 'Según la definición de la Sesión 1, ¿qué estudia la Sociolingüística?',
+        options: [
+            {
+                text: 'La evolución histórica de las palabras desde el latín.',
+                feedback: 'Incorrecto: Esto corresponde a la lingüística diacrónica o histórica, no a la sociolingüística.',
+                isCorrect: false
+            },
+            {
+                text: 'La estructura gramatical y las reglas normativas de la lengua.',
+                feedback: 'Incorrecto: Esto es el estudio de la gramática normativa o la sintaxis pura, sin considerar el contexto social.',
+                isCorrect: false
+            },
+            {
+                text: 'La relación entre la lengua y la sociedad, y cómo varía el habla según el contexto social.',
+                feedback: 'Correcto: Se centra en cómo factores como la clase, edad o contexto influyen en el uso de la lengua.',
+                isCorrect: true
+            },
+            {
+                text: 'Los sonidos del habla desde un punto de vista físico y acústico.',
+                feedback: 'Incorrecto: Esto es el campo de estudio de la fonética.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 2,
+        prompt: '¿Qué tres elementos componen el "idiolecto" de una persona?',
+        options: [
+            {
+                text: 'Geolecto, Sociolecto y Registro.',
+                feedback: 'Correcto: Es la suma de tu origen geográfico, tu grupo social y tus experiencias/estilo personal.',
+                isCorrect: true
+            },
+            {
+                text: 'Sujeto, Verbo y Predicado.',
+                feedback: 'Incorrecto: Estos son componentes sintácticos de una oración, no variedades de la lengua.',
+                isCorrect: false
+            },
+            {
+                text: 'Acento, Tono y Ritmo.',
+                feedback: 'Incorrecto: Estos son rasgos prosódicos o fonéticos, no las variedades que forman el idiolecto.',
+                isCorrect: false
+            },
+            {
+                text: 'Español, Inglés y Spanglish.',
+                feedback: 'Incorrecto: Estos son idiomas o mezclas específicas, no los componentes teóricos del habla individual.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 3,
+        prompt: 'Una diferencia de vocabulario (ej. decir "autobús" vs. "guagua") corresponde al nivel de variación...',
+        options: [
+            {
+                text: 'Fónico.',
+                feedback: 'Incorrecto: El nivel fónico se refiere a sonidos y pronunciación, no a palabras completas.',
+                isCorrect: false
+            },
+            {
+                text: 'Morfosintáctico.',
+                feedback: 'Incorrecto: Este nivel se refiere a la gramática y estructura de las oraciones.',
+                isCorrect: false
+            },
+            {
+                text: 'Léxico.',
+                feedback: 'Correcto: El nivel léxico se ocupa del vocabulario y las palabras que usamos.',
+                isCorrect: true
+            },
+            {
+                text: 'Diacrónico.',
+                feedback: 'Incorrecto: Diacrónico se refiere al tiempo/historia, no al tipo de elemento lingüístico que varía.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 4,
+        prompt: '¿Cuál es la diferencia entre un Pidgin y una Lengua Criolla?',
+        options: [
+            {
+                text: 'El Pidgin tiene hablantes nativos y la Criolla no.',
+                feedback: 'Incorrecto: Es al revés; el pidgin nace como lengua de emergencia sin hablantes nativos.',
+                isCorrect: false
+            },
+            {
+                text: 'El Pidgin es solo para comercio y no tiene hablantes nativos; la Criolla sí tiene hablantes nativos.',
+                feedback: 'Correcto: Cuando un pidgin se transmite a los hijos y se convierte en lengua materna, pasa a ser una lengua criolla.',
+                isCorrect: true
+            },
+            {
+                text: 'No hay diferencia, son sinónimos exactos.',
+                feedback: 'Incorrecto: Son etapas diferentes en la evolución del contacto de lenguas.',
+                isCorrect: false
+            },
+            {
+                text: 'El Pidgin se habla en América y la Criolla en España.',
+                feedback: 'Incorrecto: La distinción es sociolingüística y evolutiva, no puramente geográfica.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 5,
+        prompt: '¿Qué variedad se considera "diastrática"?',
+        options: [
+            {
+                text: 'El dialecto de una región específica (ej. Madrid).',
+                feedback: 'Incorrecto: Eso es una variedad diatópica (geográfica).',
+                isCorrect: false
+            },
+            {
+                text: 'El sociolecto (depende de la clase social, educación, etc.).',
+                feedback: 'Correcto: Diastrático se refiere a los estratos sociales.',
+                isCorrect: true
+            },
+            {
+                text: 'El registro formal o informal.',
+                feedback: 'Incorrecto: Eso es una variedad diafásica (situacional).',
+                isCorrect: false
+            },
+            {
+                text: 'El español del siglo XV.',
+                feedback: 'Incorrecto: Eso es una variedad diacrónica (histórica).',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 6,
+        prompt: 'Según la "Tesis Andalucista", ¿por qué el español de América se parece al andaluz?',
+        options: [
+            {
+                text: 'Porque los reyes de España eran andaluces.',
+                feedback: 'Incorrecto: Los Reyes Católicos eran de Castilla y Aragón.',
+                isCorrect: false
+            },
+            {
+                text: 'Porque la mayoría de los colonos y barcos salieron de puertos andaluces (Sevilla/Cádiz).',
+                feedback: 'Correcto: El predominio demográfico y logístico del sur de España influyó decisivamente en la formación del español americano.',
+                isCorrect: true
+            },
+            {
+                text: 'Porque el clima de América es igual al de Andalucía.',
+                feedback: 'Incorrecto: El clima no determina la estructura de la lengua de esta manera.',
+                isCorrect: false
+            },
+            {
+                text: 'Es una teoría falsa; el español de América viene del vasco.',
+                feedback: 'Incorrecto: La tesis andalucista es la más aceptada para explicar rasgos como el seseo.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 7,
+        prompt: '¿Qué rasgo gramatical comparten Andalucía, Canarias y América?',
+        options: [
+            {
+                text: 'El uso de "vosotros".',
+                feedback: 'Incorrecto: Al contrario, “vosotros” es exclusivo del español peninsular centro-norte.',
+                isCorrect: false
+            },
+            {
+                text: 'El uso de "ustedes" para la segunda persona del plural (informal y formal).',
+                feedback: 'Correcto: En estas zonas no se usa “vosotros”; “ustedes” cubre ambos usos.',
+                isCorrect: true
+            },
+            {
+                text: 'El leísmo.',
+                feedback: 'Incorrecto: El leísmo es característico del centro de España y algunas zonas andinas, no de Andalucía/Canarias en general.',
+                isCorrect: false
+            },
+            {
+                text: 'El voseo.',
+                feedback: 'Incorrecto: El voseo es típico del Cono Sur y Centroamérica, no de Andalucía o Canarias.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 8,
+        prompt: '¿Cuál de estas palabras es un "guanchismo" (origen canario)?',
+        options: [
+            {
+                text: 'Gofio.',
+                feedback: 'Correcto: Es un alimento tradicional canario de origen guanche.',
+                isCorrect: true
+            },
+            {
+                text: 'Tomate.',
+                feedback: 'Incorrecto: Es de origen náhuatl (México).',
+                isCorrect: false
+            },
+            {
+                text: 'Cancha.',
+                feedback: 'Incorrecto: Es de origen quechua (Andes).',
+                isCorrect: false
+            },
+            {
+                text: 'Almohada.',
+                feedback: 'Incorrecto: Es de origen árabe.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 9,
+        prompt: 'El rasgo de pronunciar la "z" y la "c" igual que la "s" se llama:',
+        options: [
+            {
+                text: 'Yeísmo.',
+                feedback: 'Incorrecto: El yeísmo es pronunciar “ll” como “y”.',
+                isCorrect: false
+            },
+            {
+                text: 'Seseo.',
+                feedback: 'Correcto: Es la ausencia del fonema /θ/ (interdental), pronunciando todo como /s/.',
+                isCorrect: true
+            },
+            {
+                text: 'Ceceo.',
+                feedback: 'Incorrecto: El ceceo es pronunciar la “s” como “z” (interdental), típico de zonas rurales de Andalucía.',
+                isCorrect: false
+            },
+            {
+                text: 'Voseo.',
+                feedback: 'Incorrecto: El voseo es un rasgo gramatical (uso de vos), no fonético.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 10,
+        prompt: '¿Qué lengua prerromana se hablaba en la Península Ibérica y NO es indoeuropea (sigue viva hoy)?',
+        options: [
+            {
+                text: 'Celta.',
+                feedback: 'Incorrecto: El celta es indoeuropeo y desapareció como lengua hablada en la península.',
+                isCorrect: false
+            },
+            {
+                text: 'Íbero.',
+                feedback: 'Incorrecto: El íbero desapareció y su relación con otras lenguas no está clara, aunque no era indoeuropeo.',
+                isCorrect: false
+            },
+            {
+                text: 'Euskera (Vasco).',
+                feedback: 'Correcto: Es la única lengua prerromana que ha sobrevivido hasta la actualidad.',
+                isCorrect: true
+            },
+            {
+                text: 'Latín.',
+                feedback: 'Incorrecto: El latín llegó con los romanos, no es prerromano.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 11,
+        prompt: '¿Qué rasgo fonético caracteriza al español de México (tierras altas)?',
+        options: [
+            {
+                text: 'Aspiración fuerte de la "s" final.',
+                feedback: 'Incorrecto: Al contrario, México se caracteriza por conservar la “s” final muy fuerte.',
+                isCorrect: false
+            },
+            {
+                text: 'Debilitamiento o pérdida de vocales átonas.',
+                feedback: 'Correcto: Es típico escuchar “ntes” por “antes” o “pes” por “pesos”.',
+                isCorrect: true
+            },
+            {
+                text: 'Pronunciación de la "r" como "l" (lambdacismo).',
+                feedback: 'Incorrecto: Esto es típico del Caribe, no de México.',
+                isCorrect: false
+            },
+            {
+                text: 'Distinción entre "s" y "z".',
+                feedback: 'Incorrecto: En México hay seseo, no distinción.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 12,
+        prompt: 'La palabra "cuate" (amigo) proviene de la lengua...',
+        options: [
+            {
+                text: 'Quechua.',
+                feedback: 'Incorrecto: Del quechua vienen palabras como “papa” o “cancha”.',
+                isCorrect: false
+            },
+            {
+                text: 'Náhuatl.',
+                feedback: 'Correcto: Es un indigenismo mexicano muy común.',
+                isCorrect: true
+            },
+            {
+                text: 'Taíno.',
+                feedback: 'Incorrecto: Del taíno vienen “hamaca” o “huracán”.',
+                isCorrect: false
+            },
+            {
+                text: 'Guaraní.',
+                feedback: 'Incorrecto: Del guaraní vienen “jaguar” o “tucán”.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 13,
+        prompt: '¿Qué uso del verbo "haber" es común en el español popular de México y otras zonas?',
+        options: [
+            {
+                text: 'Pluralización del impersonal ("Habían muchas fiestas").',
+                feedback: 'Correcto: Aunque la norma culta prefiere “había”, la pluralización es muy frecuente.',
+                isCorrect: true
+            },
+            {
+                text: 'Uso como verbo principal de movimiento.',
+                feedback: 'Incorrecto: Haber no indica movimiento.',
+                isCorrect: false
+            },
+            {
+                text: 'Eliminación del verbo haber.',
+                feedback: 'Incorrecto: No se elimina, se pluraliza.',
+                isCorrect: false
+            },
+            {
+                text: 'Sustitución por "ser".',
+                feedback: 'Incorrecto: No se sustituye por ser en este contexto.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 14,
+        prompt: 'El "leísmo" (uso de "le" como objeto directo) es aceptado en España para personas masculinas, pero también aparece en...',
+        options: [
+            {
+                text: 'El Caribe.',
+                feedback: 'Incorrecto: El Caribe no es una zona leísta.',
+                isCorrect: false
+            },
+            {
+                text: 'La zona del Río de la Plata.',
+                feedback: 'Incorrecto: Allí predomina el sistema etimológico (lo/la).',
+                isCorrect: false
+            },
+            {
+                text: 'La zona Andina (Ecuador, Perú, Bolivia).',
+                feedback: 'Correcto: En la zona andina se da un leísmo particular por contacto con lenguas indígenas.',
+                isCorrect: true
+            },
+            {
+                text: 'México.',
+                feedback: 'Incorrecto: México usa mayoritariamente “lo” para objeto directo.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 15,
+        prompt: '¿Qué característica fonética define al Español Andino frente a otras variedades americanas?',
+        options: [
+            {
+                text: 'Es fonéticamente innovador (aspira mucho).',
+                feedback: 'Incorrecto: Al contrario, es conservador.',
+                isCorrect: false
+            },
+            {
+                text: 'Es fonéticamente conservador (mantiene la "s" final y consonantes).',
+                feedback: 'Correcto: Se pronuncian claramente las consonantes finales.',
+                isCorrect: true
+            },
+            {
+                text: 'Usa el "sheísmo" en todas partes.',
+                feedback: 'Incorrecto: El sheísmo es rioplatense.',
+                isCorrect: false
+            },
+            {
+                text: 'Confunde la "r" y la "l".',
+                feedback: 'Incorrecto: Eso es caribeño.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 16,
+        prompt: 'En el español andino, es común la posposición del posesivo. Un ejemplo es:',
+        options: [
+            {
+                text: '"Mi hijo".',
+                feedback: 'Incorrecto: Este es el orden estándar.',
+                isCorrect: false
+            },
+            {
+                text: '"El hijo mío".',
+                feedback: 'Correcto: Esta estructura es muy frecuente en el habla andina.',
+                isCorrect: true
+            },
+            {
+                text: '"Hijo de mi".',
+                feedback: 'Incorrecto: Esta estructura no es correcta.',
+                isCorrect: false
+            },
+            {
+                text: '"Su de él hijo".',
+                feedback: 'Incorrecto: Estructura agramatical.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 17,
+        prompt: '¿Qué palabra de origen quechua usamos en español general para un tubérculo?',
+        options: [
+            {
+                text: 'Tomate.',
+                feedback: 'Incorrecto: Es náhuatl.',
+                isCorrect: false
+            },
+            {
+                text: 'Yuca.',
+                feedback: 'Incorrecto: Es arahuaco/taíno.',
+                isCorrect: false
+            },
+            {
+                text: 'Papa.',
+                feedback: 'Correcto: “Papa” (patata) viene del quechua.',
+                isCorrect: true
+            },
+            {
+                text: 'Maíz.',
+                feedback: 'Incorrecto: Es taíno.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 18,
+        prompt: 'El rasgo más distintivo del español Rioplatense (Argentina/Uruguay) es el "rehilamiento". ¿En qué consiste?',
+        options: [
+            {
+                text: 'Pronunciar la "r" como "l".',
+                feedback: 'Incorrecto: Eso es lambdacismo (Caribe).',
+                isCorrect: false
+            },
+            {
+                text: 'Pronunciar la "ll" y la "y" como un sonido similar a "sh" ([ʃ]).',
+                feedback: 'Correcto: Ej: “sho” por “yo”, “cashé” por “calle”.',
+                isCorrect: true
+            },
+            {
+                text: 'Aspirar la "j".',
+                feedback: 'Incorrecto: Eso ocurre en el Caribe y Andalucía.',
+                isCorrect: false
+            },
+            {
+                text: 'Pronunciar la "z" como "s".',
+                feedback: 'Incorrecto: Eso es seseo, y es general en América, no exclusivo del Rioplatense.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 19,
+        prompt: '¿Cómo se conjugan los verbos en el voseo argentino (presente)?',
+        options: [
+            {
+                text: 'Tú cantas, tú comes.',
+                feedback: 'Incorrecto: Esa es la forma de tuteo estándar.',
+                isCorrect: false
+            },
+            {
+                text: 'Vos cantáis, vos coméis.',
+                feedback: 'Incorrecto: Esa forma conserva el diptongo (más parecido al vosotros original), no es la argentina estándar.',
+                isCorrect: false
+            },
+            {
+                text: 'Vos cantás, vos comés, vos vivís.',
+                feedback: 'Correcto: Se pierde el diptongo y se acentúa la última sílaba.',
+                isCorrect: true
+            },
+            {
+                text: 'Vos canta, vos come.',
+                feedback: 'Incorrecto: Eso parece imperativo o tercera persona.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 20,
+        prompt: '¿Qué es el "lunfardo"?',
+        options: [
+            {
+                text: 'Una lengua indígena de Uruguay.',
+                feedback: 'Incorrecto: No es una lengua indígena.',
+                isCorrect: false
+            },
+            {
+                text: 'Una jerga originada en Buenos Aires con mucha influencia italiana.',
+                feedback: 'Correcto: Nació en ambientes populares y carcelarios.',
+                isCorrect: true
+            },
+            {
+                text: 'El dialecto oficial de la Patagonia.',
+                feedback: 'Incorrecto: No es un dialecto oficial ni regional extenso.',
+                isCorrect: false
+            },
+            {
+                text: 'Una variedad del quechua.',
+                feedback: 'Incorrecto: No tiene relación con el quechua.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 21,
+        prompt: 'En Chile, el voseo es particular porque...',
+        options: [
+            {
+                text: 'Es idéntico al argentino.',
+                feedback: 'Incorrecto: No, la conjugación es diferente.',
+                isCorrect: false
+            },
+            {
+                text: 'Mezcla el pronombre "tú" con una conjugación voseante (ej. "tú cachái").',
+                feedback: 'Correcto: Es un rasgo muy distintivo del habla chilena coloquial.',
+                isCorrect: true
+            },
+            {
+                text: 'Solo se usa en documentos escritos.',
+                feedback: 'Incorrecto: Es eminentemente oral y coloquial.',
+                isCorrect: false
+            },
+            {
+                text: 'No existe, en Chile solo se tutea.',
+                feedback: 'Incorrecto: Falso, el voseo verbal es muy común.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 22,
+        prompt: '¿Qué significa la palabra chilena "fome"?',
+        options: [
+            {
+                text: 'Divertido.',
+                feedback: 'Incorrecto: Es lo opuesto.',
+                isCorrect: false
+            },
+            {
+                text: 'Aburrido o sin gracia.',
+                feedback: 'Correcto: Es una de las palabras más comunes en Chile.',
+                isCorrect: true
+            },
+            {
+                text: 'Hambriento.',
+                feedback: 'Incorrecto: Se parece a “fame” (hambre en italiano/gallego), pero no significa eso.',
+                isCorrect: false
+            },
+            {
+                text: 'Rápido.',
+                feedback: 'Incorrecto: Eso sería “al tiro”.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 23,
+        prompt: 'En el Caribe (Puerto Rico), es común escuchar "Puelto Rico" en lugar de "Puerto Rico". Este fenómeno se llama:',
+        options: [
+            {
+                text: 'Rotacismo.',
+                feedback: 'Incorrecto: Rotacismo es cambiar L por R.',
+                isCorrect: false
+            },
+            {
+                text: 'Lambdacismo (o lateralización).',
+                feedback: 'Correcto: Es el cambio de /r/ implosiva por /l/.',
+                isCorrect: true
+            },
+            {
+                text: 'Yeísmo.',
+                feedback: 'Incorrecto: Es ll -> y.',
+                isCorrect: false
+            },
+            {
+                text: 'Ceceo.',
+                feedback: 'Incorrecto: Es s -> z.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 24,
+        prompt: '¿Qué rasgo sintáctico es distintivo del español caribeño en las preguntas?',
+        options: [
+            {
+                text: 'La inversión sujeto-verbo no se hace (Sujeto explícito antepuesto).',
+                feedback: 'Correcto: Ej: “¿Qué tú quieres?” en lugar de “¿Qué quieres tú?”.',
+                isCorrect: true
+            },
+            {
+                text: 'Poner el verbo siempre al final.',
+                feedback: 'Incorrecto: Eso es típico del alemán o latín, no del español caribeño.',
+                isCorrect: false
+            },
+            {
+                text: 'Eliminar el sujeto siempre.',
+                feedback: 'Incorrecto: Al contrario, el sujeto se explicita mucho.',
+                isCorrect: false
+            },
+            {
+                text: 'Usar "vos" en las preguntas.',
+                feedback: 'Incorrecto: El Caribe es zona de tuteo/ustedes.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 25,
+        prompt: 'La palabra "guagua" tiene significados diferentes. En el Caribe y Canarias significa _______, pero en la zona Andina significa _______.',
+        options: [
+            {
+                text: 'Bebé / Autobús.',
+                feedback: 'Incorrecto: Al revés.',
+                isCorrect: false
+            },
+            {
+                text: 'Autobús / Bebé (niño pequeño).',
+                feedback: 'Correcto: Es un ejemplo clásico de variación léxica.',
+                isCorrect: true
+            },
+            {
+                text: 'Comida / Dinero.',
+                feedback: 'Incorrecto: No tiene estos significados.',
+                isCorrect: false
+            },
+            {
+                text: 'Fiesta / Trabajo.',
+                feedback: 'Incorrecto: Tampoco.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 26,
+        prompt: 'El español es la _______ lengua materna más hablada del mundo.',
+        options: [
+            {
+                text: 'Primera.',
+                feedback: 'Incorrecto: El chino mandarín es la primera.',
+                isCorrect: false
+            },
+            {
+                text: 'Segunda.',
+                feedback: 'Correcto: Supera al inglés en hablantes nativos.',
+                isCorrect: true
+            },
+            {
+                text: 'Tercera.',
+                feedback: 'Incorrecto: Es la segunda.',
+                isCorrect: false
+            },
+            {
+                text: 'Cuarta.',
+                feedback: 'Incorrecto: Es la segunda.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 27,
+        prompt: '¿Cuál es el origen mayoritario de la población hispana en Estados Unidos?',
+        options: [
+            {
+                text: 'Puertorriqueño.',
+                feedback: 'Incorrecto: Son el segundo grupo, pero lejos del primero.',
+                isCorrect: false
+            },
+            {
+                text: 'Cubano.',
+                feedback: 'Incorrecto: Son importantes en Florida, pero minoría a nivel nacional.',
+                isCorrect: false
+            },
+            {
+                text: 'Mexicano.',
+                feedback: 'Correcto: Representan más del 60% de los hispanos en EE.UU.',
+                isCorrect: true
+            },
+            {
+                text: 'Colombiano.',
+                feedback: 'Incorrecto: Es un grupo menor en comparación.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 28,
+        prompt: '¿En qué estado de EE.UU. hay una gran concentración de cubanos?',
+        options: [
+            {
+                text: 'California.',
+                feedback: 'Incorrecto: California es mayoritariamente mexicana.',
+                isCorrect: false
+            },
+            {
+                text: 'Texas.',
+                feedback: 'Incorrecto: Texas es mayoritariamente mexicana.',
+                isCorrect: false
+            },
+            {
+                text: 'Florida.',
+                feedback: 'Correcto: Especialmente en Miami.',
+                isCorrect: true
+            },
+            {
+                text: 'Nueva York.',
+                feedback: 'Incorrecto: Nueva York es dominicana/puertorriqueña.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 29,
+        prompt: '¿Qué ocurre generalmente con el español en la tercera generación de inmigrantes en EE.UU.?',
+        options: [
+            {
+                text: 'Lo hablan mejor que sus abuelos.',
+                feedback: 'Incorrecto: Falso, suelen perder fluidez.',
+                isCorrect: false
+            },
+            {
+                text: 'Se mantiene intacto.',
+                feedback: 'Incorrecto: Falso, hay un desplazamiento hacia el inglés.',
+                isCorrect: false
+            },
+            {
+                text: 'Tiende a perderse y el inglés se convierte en la lengua dominante.',
+                feedback: 'Correcto: Es el patrón sociolingüístico habitual.',
+                isCorrect: true
+            },
+            {
+                text: 'Se convierte en francés.',
+                feedback: 'Incorrecto: Imposible.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 30,
+        prompt: 'El "Spanglish" se define mejor como:',
+        options: [
+            {
+                text: 'Una lengua oficial de EE.UU.',
+                feedback: 'Incorrecto: No es oficial.',
+                isCorrect: false
+            },
+            {
+                text: 'Un fenómeno de alternancia de códigos y préstamos léxicos.',
+                feedback: 'Correcto: No es una lengua separada, sino una práctica de bilingües.',
+                isCorrect: true
+            },
+            {
+                text: 'Un dialecto del inglés.',
+                feedback: 'Incorrecto: Tiene base española también.',
+                isCorrect: false
+            },
+            {
+                text: 'Una lengua criolla establecida.',
+                feedback: 'Incorrecto: No cumple los requisitos de lengua criolla (estabilidad, hablantes nativos únicos).',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 31,
+        prompt: 'La alternancia de códigos "intrasentencial" ocurre...',
+        options: [
+            {
+                text: 'Entre dos frases distintas.',
+                feedback: 'Incorrecto: Eso es intersentencial.',
+                isCorrect: false
+            },
+            {
+                text: 'Dentro de la misma oración.',
+                feedback: 'Correcto: Ej: “I want to go a la playa”.',
+                isCorrect: true
+            },
+            {
+                text: 'Usando solo una palabra suelta (tag).',
+                feedback: 'Incorrecto: Eso es emblemática o tag-switching.',
+                isCorrect: false
+            },
+            {
+                text: 'Al cambiar de tema de conversación.',
+                feedback: 'Incorrecto: No define el tipo gramatical de alternancia.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 32,
+        prompt: '¿Qué lengua asiática tiene miles de préstamos del español debido a la colonización?',
+        options: [
+            {
+                text: 'Chino Mandarín.',
+                feedback: 'Incorrecto: Poca influencia española.',
+                isCorrect: false
+            },
+            {
+                text: 'Tagalo (Filipinas).',
+                feedback: 'Correcto: Filipinas fue colonia española y su lengua absorbió mucho vocabulario.',
+                isCorrect: true
+            },
+            {
+                text: 'Japonés.',
+                feedback: 'Incorrecto: Solo tiene algunas palabras (pan), pero no miles.',
+                isCorrect: false
+            },
+            {
+                text: 'Hindi.',
+                feedback: 'Incorrecto: Sin relación colonial.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 33,
+        prompt: '¿Qué es el "ladino"?',
+        options: [
+            {
+                text: 'El español que se habla en Guinea Ecuatorial.',
+                feedback: 'Incorrecto: Ese es español ecuatoguineano.',
+                isCorrect: false
+            },
+            {
+                text: 'La lengua de los judíos sefardíes expulsados de España en 1492.',
+                feedback: 'Correcto: Conserva rasgos del español medieval.',
+                isCorrect: true
+            },
+            {
+                text: 'Una lengua indígena de Centroamérica.',
+                feedback: 'Incorrecto: Ladino en Centroamérica se refiere a mestizos, pero la lengua ladino es judeoespañol.',
+                isCorrect: false
+            },
+            {
+                text: 'Un dialecto del italiano.',
+                feedback: 'Incorrecto: Existe un ladino en los Alpes, pero en este contexto nos referimos al judeoespañol.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 34,
+        prompt: '¿Cuál es el único país de África donde el español es lengua oficial?',
+        options: [
+            {
+                text: 'Marruecos.',
+                feedback: 'Incorrecto: Se habla algo de español en el norte, pero no es oficial.',
+                isCorrect: false
+            },
+            {
+                text: 'Guinea Ecuatorial.',
+                feedback: 'Correcto: Fue colonia española hasta 1968.',
+                isCorrect: true
+            },
+            {
+                text: 'Senegal.',
+                feedback: 'Incorrecto: Es francófono.',
+                isCorrect: false
+            },
+            {
+                text: 'Angola.',
+                feedback: 'Incorrecto: Es lusófono (portugués).',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 35,
+        prompt: 'El término "chicano" se refiere específicamente a...',
+        options: [
+            {
+                text: 'Cualquier hispano en EE.UU.',
+                feedback: 'Incorrecto: Demasiado general.',
+                isCorrect: false
+            },
+            {
+                text: 'Estadounidenses de ascendencia mexicana.',
+                feedback: 'Correcto: Es un término de identidad cultural y política.',
+                isCorrect: true
+            },
+            {
+                text: 'Inmigrantes de Puerto Rico.',
+                feedback: 'Incorrecto: Esos son “nuyoricans” o puertorriqueños.',
+                isCorrect: false
+            },
+            {
+                text: 'Cubanos en Miami.',
+                feedback: 'Incorrecto: No se usa para cubanos.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 36,
+        prompt: '(Verdadero/Falso) El ladino es una variedad moderna que ha incorporado muchos anglicismos.',
+        options: [
+            {
+                text: 'Verdadero.',
+                feedback: 'Incorrecto: El ladino es arcaizante.',
+                isCorrect: false
+            },
+            {
+                text: 'Falso.',
+                feedback: 'Correcto: El ladino es conocido por conservar el español antiguo (arcaísmos) y no por modernismos.',
+                isCorrect: true
+            }
+        ]
+    },
+    {
+        id: 37,
+        prompt: '¿Qué lengua indígena es cooficial con el español en Paraguay?',
+        options: [
+            {
+                text: 'Quechua.',
+                feedback: 'Incorrecto: Se habla en los Andes, no es dominante en Paraguay.',
+                isCorrect: false
+            },
+            {
+                text: 'Guaraní.',
+                feedback: 'Correcto: Es hablado por la mayoría de la población, incluso no indígena.',
+                isCorrect: true
+            },
+            {
+                text: 'Aimara.',
+                feedback: 'Incorrecto: Se habla en Bolivia/Perú.',
+                isCorrect: false
+            },
+            {
+                text: 'Mapudungun.',
+                feedback: 'Incorrecto: Se habla en Chile/Argentina.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 38,
+        prompt: 'El uso de "le" en expresiones como "ándale", "pásale", "híjolé" es típico de...',
+        options: [
+            {
+                text: 'España.',
+                feedback: 'Incorrecto: No se usa así en España.',
+                isCorrect: false
+            },
+            {
+                text: 'Argentina.',
+                feedback: 'Incorrecto: No es un rasgo rioplatense.',
+                isCorrect: false
+            },
+            {
+                text: 'México.',
+                feedback: 'Correcto: Es un sufijo intensificador muy característico.',
+                isCorrect: true
+            },
+            {
+                text: 'Cuba.',
+                feedback: 'Incorrecto: No es rasgo caribeño.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 39,
+        prompt: '¿Qué es el "dequeísmo"?',
+        options: [
+            {
+                text: 'Usar "de que" cuando el verbo no lo requiere (ej. "Pienso de que...").',
+                feedback: 'Correcto: Es añadir una preposición innecesaria.',
+                isCorrect: true
+            },
+            {
+                text: 'Omitir el "de" cuando es necesario (ej. "Me alegro que...").',
+                feedback: 'Incorrecto: Eso es “queísmo”.',
+                isCorrect: false
+            },
+            {
+                text: 'Usar mucho la palabra "que".',
+                feedback: 'Incorrecto: No es la definición lingüística.',
+                isCorrect: false
+            },
+            {
+                text: 'Hablar muy rápido.',
+                feedback: 'Incorrecto: Irrelevante.',
+                isCorrect: false
+            }
+        ]
+    },
+    {
+        id: 40,
+        prompt: '¿Cuál de los siguientes NO es un nivel de variación lingüística?',
+        options: [
+            {
+                text: 'Fónico.',
+                feedback: 'Incorrecto: Sí es un nivel (sonidos).',
+                isCorrect: false
+            },
+            {
+                text: 'Léxico.',
+                feedback: 'Incorrecto: Sí es un nivel (palabras).',
+                isCorrect: false
+            },
+            {
+                text: 'Gramatical.',
+                feedback: 'Incorrecto: Sí es un nivel (estructura).',
+                isCorrect: false
+            },
+            {
+                text: 'Atómico.',
+                feedback: 'Correcto: “Atómico” no es un término de la lingüística para niveles de variación.',
+                isCorrect: true
+            }
+        ]
+    }
+];
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -105,6 +1153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     buildReverseIndex();
     initializeMap();
     setupEventListeners();
+    initializeQuizDeck();
 });
 
 // ============================================
@@ -800,6 +1849,94 @@ function highlightPhraseSelection(adminUnitID) {
 }
 
 // ============================================
+// MODE 6: QUIZ (MULTIPLE CHOICE)
+// ============================================
+
+function initializeQuizDeck() {
+    quizState.deck = shuffleArray(quizQuestions.map((_, idx) => idx));
+    quizState.used = [];
+}
+
+function loadNextQuizQuestion() {
+    const header = document.getElementById('quizHeader');
+    const questionEl = document.getElementById('quizQuestion');
+    const optionsContainer = document.getElementById('quizOptions');
+    const feedback = document.getElementById('quizFeedback');
+    const nextBtn = document.getElementById('quizNextBtn');
+
+    if (!quizQuestions || quizQuestions.length === 0) {
+        header.textContent = 'No hay preguntas disponibles.';
+        questionEl.textContent = '';
+        optionsContainer.innerHTML = '';
+        feedback.style.display = 'block';
+        feedback.className = 'feedback-box feedback-error';
+        feedback.textContent = 'Añade preguntas al cuestionario para activar esta sección.';
+        nextBtn.disabled = true;
+        return;
+    }
+
+    if (quizState.deck.length === 0) {
+        initializeQuizDeck();
+        header.textContent = 'Nueva ronda: se reordenaron las 40 preguntas.';
+    }
+
+    const nextIndex = quizState.deck.pop();
+    quizState.used.push(nextIndex);
+    quizState.current = quizQuestions[nextIndex];
+    quizState.answered = false;
+
+    header.textContent = `Pregunta ${quizState.used.length} de ${quizQuestions.length} (ID ${quizState.current.id})`;
+    questionEl.textContent = quizState.current.prompt;
+    optionsContainer.innerHTML = '';
+
+    feedback.style.display = 'none';
+    feedback.className = 'feedback-box';
+    feedback.textContent = '';
+
+    const shuffledOptions = shuffleArray(quizState.current.options);
+    shuffledOptions.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = option.text;
+        btn.dataset.correct = option.isCorrect;
+        btn.dataset.feedback = option.feedback;
+        btn.addEventListener('click', () => handleQuizAnswer(btn));
+        optionsContainer.appendChild(btn);
+    });
+
+    nextBtn.disabled = true;
+    nextBtn.textContent = 'Siguiente pregunta';
+}
+
+function handleQuizAnswer(button) {
+    if (!quizState.current || quizState.answered) return;
+
+    quizState.answered = true;
+    const isCorrect = button.dataset.correct === 'true';
+    const feedbackText = button.dataset.feedback || '';
+    const feedback = document.getElementById('quizFeedback');
+    const nextBtn = document.getElementById('quizNextBtn');
+
+    document.querySelectorAll('#quizOptions .quiz-option').forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.correct === 'true') {
+            btn.classList.add('correct');
+        }
+    });
+
+    if (!isCorrect) {
+        button.classList.add('incorrect');
+    }
+
+    feedback.style.display = 'block';
+    feedback.className = `feedback-box ${isCorrect ? 'feedback-success' : 'feedback-error'}`;
+    feedback.textContent = feedbackText;
+
+    nextBtn.disabled = false;
+    nextBtn.textContent = quizState.deck.length === 0 ? 'Comenzar nueva ronda' : 'Siguiente pregunta';
+}
+
+// ============================================
 // MODE 5: IDENTIFY THE SPEAKER
 // ============================================
 
@@ -876,6 +2013,7 @@ function setupEventListeners() {
     document.getElementById('checkAnswerBtn').addEventListener('click', checkAnswer);
     document.getElementById('phraseHintBtn').addEventListener('click', revealPhraseHint);
     document.getElementById('phraseNextBtn').addEventListener('click', loadNewPhraseChallenge);
+    document.getElementById('quizNextBtn').addEventListener('click', loadNextQuizQuestion);
 
     document.getElementById('nextVideoBtn').addEventListener('click', () => {
         loadNextIdentifyVideo();
@@ -897,6 +2035,7 @@ function switchMode(mode) {
     document.getElementById('filterPanel').style.display = mode === 'filter' ? 'block' : 'none';
     document.getElementById('challengePanel').style.display = mode === 'challenge' ? 'block' : 'none';
     document.getElementById('phraseChallengePanel').style.display = mode === 'phrase-challenge' ? 'block' : 'none';
+    document.getElementById('quizPanel').style.display = mode === 'quiz' ? 'block' : 'none';
     document.getElementById('filterControls').style.display = mode === 'filter' ? 'flex' : 'none';
     document.getElementById('map').style.display = mode === 'identify' ? 'none' : 'block';
     document.getElementById('identifyGame').style.display = mode === 'identify' ? 'block' : 'none';
@@ -918,6 +2057,8 @@ function switchMode(mode) {
         loadNewPhraseChallenge();
         document.getElementById('phraseFeedback').style.display = 'none';
         document.getElementById('phraseHint').style.display = 'none';
+    } else if (mode === 'quiz') {
+        loadNextQuizQuestion();
     } else if (mode === 'identify') {
         loadNextIdentifyVideo();
     }
