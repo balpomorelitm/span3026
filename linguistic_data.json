@@ -234,5 +234,223 @@
       "text": "No te preocupís, poh. Si e' un condoro no más. Cómprate un completo y 'tamos listos.",
       "answer": "chile"
     }
+  ],
+  "phrase_challenges": [
+    {
+      "text": "Vosotros habéis visto a Juan? Le he dicho que venga al chalé porque hace mazo de frío.",
+      "answer": "castellano-centro-norte",
+      "hint": "Distinción clara de Z/C, uso de VOSOTROS, leísmo y tiempos compuestos.",
+      "feedback": "Variedad Centro-Norte. Gramática: Uso de 'vosotros' (2ª pl.) y leísmo ('le' por 'lo' para OD persona). Léxico: 'chalé' (casa unifamiliar) y 'mazo' (jerga madrileña para 'mucho')."
+    },
+    {
+      "text": "¡Qué guay! Os he traído un ordenador nuevo para que juguéis vosotros.",
+      "answer": "castellano-centro-norte",
+      "hint": "Distinción clara de Z/C, uso de VOSOTROS, leísmo y tiempos compuestos.",
+      "feedback": "Variedad Centro-Norte. Léxico: 'guay' (genial), 'ordenador' (computadora). Gramática: Pronombre 'os' y conjugación de 'vosotros' (juguéis)."
+    },
+    {
+      "text": "Esta mañana he comido tortilla y vosotros no habéis probado nada, sois unos majos.",
+      "answer": "castellano-centro-norte",
+      "hint": "Distinción clara de Z/C, uso de VOSOTROS, leísmo y tiempos compuestos.",
+      "feedback": "Variedad Centro-Norte. Gramática: Uso del Pretérito Perfecto Compuesto ('he comido') para pasado reciente (esta mañana). Léxico: 'majos' (simpáticos/agradables)."
+    },
+    {
+      "text": "Ayer vi a Pedro y le di un abrazo muy fuerte; vosotros sabéis que es mi mejor amigo.",
+      "answer": "castellano-centro-norte",
+      "hint": "Distinción clara de Z/C, uso de VOSOTROS, leísmo y tiempos compuestos.",
+      "feedback": "Variedad Centro-Norte. Gramática: Leísmo aceptado ('le di' refiriéndose a él) y uso normativo de 'vosotros'. Fonética: Pronunciación estándar sin aspiración de 's'."
+    },
+    {
+      "text": "Illo, ¡qué pechá de reí! Mi pare se ha comprao una moto nueva pa los niñoh.",
+      "answer": "andaluz",
+      "hint": "Aspiración de 's', pérdida de 'd', trueques de /l/ y /r/, seseo/ceceo.",
+      "feedback": "Andaluz. Léxico: 'illo' (chiquillo/tío), 'pechá' (gran cantidad). Fonética: Pérdida de 'd' intervocálica ('comprao'), pérdida de 'r' final ('reí', 'pa') y aspiración de 's' ('niñoh')."
+    },
+    {
+      "text": "Oye miarma, ten cuidao, que el sordao (soldado) se ha enfadao con el arbañí.",
+      "answer": "andaluz",
+      "hint": "Aspiración de 's', pérdida de 'd', trueques de /l/ y /r/, seseo/ceceo.",
+      "feedback": "Andaluz. Léxico: 'miarma' (mi alma, apelativo cariñoso de Sevilla). Fonética: Trueque de L por R ('sordao', 'arbañí') y pérdida sistemática de la 'd' ('cuidao', 'enfadao')."
+    },
+    {
+      "text": "Trae la caha de tomates, que loh niñoh tienen hambre y quieren comé.",
+      "answer": "andaluz",
+      "hint": "Aspiración de 's', pérdida de 'd', trueques de /l/ y /r/, seseo/ceceo.",
+      "feedback": "Andaluz. Fonética: Aspiración de la 'j' como una 'h' suave ('caha'), aspiración de 's' plural ('loh niñoh') y pérdida de 'r' final ('comé')."
+    },
+    {
+      "text": "Ustedes sabéis que ehto e' una chuminá, no me seáis malajes.",
+      "answer": "andaluz",
+      "hint": "Aspiración de 's', pérdida de 'd', trueques de /l/ y /r/, seseo/ceceo.",
+      "feedback": "Andaluz (Occidental). Gramática: Uso de 'ustedes' combinado con verbo en 'vosotros' (sabéis/seáis). Léxico: 'chuminá' (tontería), 'malaje' (persona desagradable). Fonética: Aspiración ('ehto')."
+    },
+    {
+      "text": "Ustedes van a tener que coger la guagua si quieren comer papah con millo.",
+      "answer": "canario",
+      "hint": "Uso de USTEDES, aspiración de 's', léxico guanche/americano, diminutivos.",
+      "feedback": "Canario. Gramática: 'Ustedes' con verbo en 3ª persona (van). Léxico: Americanismos/Portuguesismos: 'guagua' (autobús), 'papas' (patatas), 'millo' (maíz). Fonética: Aspiración de 's' ('papah')."
+    },
+    {
+      "text": "¡Muchacho! Dame un fisquito de ese queque antes de que se lo coman elloh.",
+      "answer": "canario",
+      "hint": "Uso de USTEDES, aspiración de 's', léxico guanche/americano, diminutivos.",
+      "feedback": "Canario. Léxico: 'fisquito' (un poco, trozo pequeño), 'queque' (bizcocho/cake, del inglés). Fonética: Aspiración final ('elloh')."
+    },
+    {
+      "text": "Espérame un momentito mi niño, que voy corriendito a buscar el naife.",
+      "answer": "canario",
+      "hint": "Uso de USTEDES, aspiración de 's', léxico guanche/americano, diminutivos.",
+      "feedback": "Canario. Gramática: Uso abundante de diminutivos afectivos en adverbios ('momentito', 'corriendito'). Léxico: 'naife' (cuchillo, del inglés 'knife')."
+    },
+    {
+      "text": "Ustedes se van a caer si no tienen cuidao con lah piedrah del camino.",
+      "answer": "canario",
+      "hint": "Uso de USTEDES, aspiración de 's', léxico guanche/americano, diminutivos.",
+      "feedback": "Canario. Gramática: Uso exclusivo de 'ustedes'. Fonética: Aspiración de 's' ('lah piedrah'), rasgo compartido con Andalucía y el Caribe."
+    },
+    {
+      "text": "¡Híjole manito! Pásame el popote y los antojitos que están en la alberca.",
+      "answer": "mexico-centroamerica",
+      "hint": "S fuerte, diminutivos, 'le' intensivo, léxico náhuatl, 'habían' plural.",
+      "feedback": "México. Léxico: Náhuatl ('popote'=pajita), local ('híjole', 'manito', 'antojitos', 'alberca'=piscina). Fonética: La 's' se pronuncia fuerte, no se aspira."
+    },
+    {
+      "text": "Órale güero, no seas gacho, ándale y pásale a la fiesta.",
+      "answer": "mexico-centroamerica",
+      "hint": "S fuerte, diminutivos, 'le' intensivo, léxico náhuatl, 'habían' plural.",
+      "feedback": "México. Gramática: Uso de 'le' intensivo sufijado a verbos ('ándale', 'pásale'). Léxico: 'güero' (rubio), 'gacho' (feo/malo), 'órale' (vamos/ok)."
+    },
+    {
+      "text": "¿Mande? No le escuché, es que habían muchos chamacos gritando en la banqueta.",
+      "answer": "mexico-centroamerica",
+      "hint": "S fuerte, diminutivos, 'le' intensivo, léxico náhuatl, 'habían' plural.",
+      "feedback": "México. Gramática: Pluralización del verbo haber ('habían muchos'). Léxico: 'Mande' (fórmula de cortesía), 'chamacos' (niños), 'banqueta' (acera)."
+    },
+    {
+      "text": "Ahorita mismo voy por el camión, nomás deja que termine mi elote.",
+      "answer": "mexico-centroamerica",
+      "hint": "S fuerte, diminutivos, 'le' intensivo, léxico náhuatl, 'habían' plural.",
+      "feedback": "México. Gramática: Diminutivo adverbial ('ahorita') y uso de 'nomás' (sólo). Léxico: 'camión' (autobús), 'elote' (maíz, del náhuatl)."
+    },
+    {
+      "text": "Ese cuate es bien metiche, se la pasa chismeando en la chamba.",
+      "answer": "mexico-centroamerica",
+      "hint": "S fuerte, diminutivos, 'le' intensivo, léxico náhuatl, 'habían' plural.",
+      "feedback": "México. Léxico: 'cuate' (amigo, del náhuatl), 'metiche' (entrometido), 'chamba' (trabajo). Gramática: Uso de 'bien' como intensificador ('bien metiche')."
+    },
+    {
+      "text": "El hijo mío se fue a comprar paltas y choclo para la comida.",
+      "answer": "andino",
+      "hint": "S conservada, posesivo pospuesto, doble superlativo, leísmo/loísmo, léxico quechua.",
+      "feedback": "Andino. Gramática: Posesivo pospuesto ('hijo mío' en vez de 'mi hijo'). Léxico: Quechuismos: 'palta' (aguacate), 'choclo' (maíz). Fonética: Conservación clara de la 's'."
+    },
+    {
+      "text": "¡Ay señor! Me dio soroche (mal de altura) cuando subí con la guagua (bebé).",
+      "answer": "andino",
+      "hint": "S conservada, posesivo pospuesto, doble superlativo, leísmo/loísmo, léxico quechua.",
+      "feedback": "Andino. Léxico: 'soroche' (mal de altura), 'guagua' (bebé/niño pequeño, del quechua; nota la diferencia con Caribe/Canarias donde es autobús)."
+    },
+    {
+      "text": "Esa niña está muy riquísima con su chompa nueva.",
+      "answer": "andino",
+      "hint": "S conservada, posesivo pospuesto, doble superlativo, leísmo/loísmo, léxico quechua.",
+      "feedback": "Andino. Gramática: Doble superlativo ('muy' + '-ísima'), rasgo típico de la zona. Léxico: 'chompa' (jersey/suéter)."
+    },
+    {
+      "text": "Le vi a la María caminando calata (desnuda) por la calle, ¡qué vergüenza!",
+      "answer": "andino",
+      "hint": "S conservada, posesivo pospuesto, doble superlativo, leísmo/loísmo, léxico quechua.",
+      "feedback": "Andino (Ecuador/Perú). Gramática: Leísmo de contacto y uso redundante ('Le vi a la María'). Léxico: 'calato' (desnudo, del quechua)."
+    },
+    {
+      "text": "No sea malito, regáleme un poquito de esa papa para la sopa.",
+      "answer": "andino",
+      "hint": "S conservada, posesivo pospuesto, doble superlativo, leísmo/loísmo, léxico quechua.",
+      "feedback": "Andino. Gramática: Cortesía extrema con diminutivos ('malito') típica de la sierra. Léxico: 'papa' (patata, origen quechua)."
+    },
+    {
+      "text": "Che, boludo, mirá que shueve (llueve), ponete la remera y vení.",
+      "answer": "austral",
+      "hint": "Voseo (sos, tenés), rehilamiento (sh por y/ll), 'che', léxico italiano/lunfardo.",
+      "feedback": "Rioplatense. Fonética: Rehilamiento (yeísmo rehilado: 'shueve' por llueve). Gramática: Voseo imperativo ('mirá', 'ponete', 'vení'). Léxico: 'che', 'boludo', 'remera' (camiseta)."
+    },
+    {
+      "text": "Vos sos un pelotudo, te dejaste la billetera en el colectivo.",
+      "answer": "austral",
+      "hint": "Voseo (sos, tenés), rehilamiento (sh por y/ll), 'che', léxico italiano/lunfardo.",
+      "feedback": "Rioplatense. Gramática: Voseo presente ('vos sos'). Léxico: 'colectivo' (autobús), 'pelotudo' (insulto), 'billetera' (cartera)."
+    },
+    {
+      "text": "¡Pero qué quilombo! Esha (ella) me dijo que no tiene laburo (trabajo).",
+      "answer": "austral",
+      "hint": "Voseo (sos, tenés), rehilamiento (sh por y/ll), 'che', léxico italiano/lunfardo.",
+      "feedback": "Rioplatense. Léxico: Lunfardo/Italianismos: 'quilombo' (lío/desorden), 'laburo' (trabajo). Fonética: Rehilamiento ('Esha' por ella)."
+    },
+    {
+      "text": "Viste que linda pollera se compró la piba; le queda relinda.",
+      "answer": "austral",
+      "hint": "Voseo (sos, tenés), rehilamiento (sh por y/ll), 'che', léxico italiano/lunfardo.",
+      "feedback": "Rioplatense. Léxico: 'pollera' (falda), 'piba' (chica). Gramática: Prefijo 're-' como superlativo ('relinda')."
+    },
+    {
+      "text": "No me rompás las bolas, chabón, estoy tomando unos mates con la vieja.",
+      "answer": "austral",
+      "hint": "Voseo (sos, tenés), rehilamiento (sh por y/ll), 'che', léxico italiano/lunfardo.",
+      "feedback": "Rioplatense. Gramática: Voseo negativo ('no rompás'). Léxico: 'chabón' (tío/tipo), 'la vieja' (madre, coloquial afectuoso)."
+    },
+    {
+      "text": "¿Cachái lo que te digo? Eres muy fome, weón, apúrate al tiro.",
+      "answer": "chile",
+      "hint": "Voseo chileno (ái/ís), aspiración extrema, léxico mapuche, queísmo/dequeísmo.",
+      "feedback": "Chileno. Gramática: Voseo chileno verbal ('cachái' = entiendes). Léxico: 'fome' (aburrido), 'weón' (tío/amigo), 'al tiro' (inmediatamente)."
+    },
+    {
+      "text": "Mi polola me dijo de que la guata le duele mucho por comer tanto.",
+      "answer": "chile",
+      "hint": "Voseo chileno (ái/ís), aspiración extrema, léxico mapuche, queísmo/dequeísmo.",
+      "feedback": "Chileno. Léxico: 'polola' (novia), 'guata' (barriga/panza, del mapudungun). Gramática: Dequeísmo ('dijo de que')."
+    },
+    {
+      "text": "Oye weón, pásame la plata o te voy a dar un combazo en el caracho.",
+      "answer": "chile",
+      "hint": "Voseo chileno (ái/ís), aspiración extrema, léxico mapuche, queísmo/dequeísmo.",
+      "feedback": "Chileno. Léxico: 'plata' (dinero), 'combazo' (golpe), 'caracho' (cara). Uso extensivo de 'weón'."
+    },
+    {
+      "text": "¿Tú creís que voy a ir a la pega (trabajo) con este frío? Estái loco.",
+      "answer": "chile",
+      "hint": "Voseo chileno (ái/ís), aspiración extrema, léxico mapuche, queísmo/dequeísmo.",
+      "feedback": "Chileno. Gramática: Voseo chileno con pronombre tú ('tú creís', 'estái'). Léxico: 'pega' (trabajo)."
+    },
+    {
+      "text": "Oye chico, dímelo para yo saber si vamo' a comel aloz con calne.",
+      "answer": "caribeno",
+      "hint": "Lambdacismo (L por R), sujeto ante infinitivo, uso de pronombre sujeto, queísmo.",
+      "feedback": "Caribeño. Gramática: Sujeto ante infinitivo ('para yo saber'). Fonética: Lambdacismo o lateralización (cambio de R por L: 'aloz', 'calne') y pérdida de 's' ('vamo')."
+    },
+    {
+      "text": "¿Qué tú quieres? Tira e'a basura al zafacón y vamo' pal mall.",
+      "answer": "caribeno",
+      "hint": "Lambdacismo (L por R), sujeto ante infinitivo, uso de pronombre sujeto, queísmo.",
+      "feedback": "Caribeño (Puerto Rico). Gramática: Sujeto explícito en pregunta ('Qué tú quieres'). Léxico: Anglicismos: 'zafacón' (safety can), 'mall'."
+    },
+    {
+      "text": "Mi helmano se compró un carro nuevo en Puelto Rico pa' janguear.",
+      "answer": "caribeno",
+      "hint": "Lambdacismo (L por R), sujeto ante infinitivo, uso de pronombre sujeto, queísmo.",
+      "feedback": "Caribeño (Puerto Rico). Léxico: 'janguear' (salir de fiesta, de 'hang out'). Fonética: Lambdacismo ('Puelto', 'helmano') y aspiración de 'j' ('helmano')."
+    },
+    {
+      "text": "Tengo duda que tú puedas caminar, te duele mucho el cueipo (cuerpo).",
+      "answer": "caribeno",
+      "hint": "Lambdacismo (L por R), sujeto ante infinitivo, uso de pronombre sujeto, queísmo.",
+      "feedback": "Caribeño (Rep. Dominicana). Gramática: Queísmo (falta de 'de'). Fonética: Vocalización de la 'r' en 'i' ('cueipo'), rasgo típico dominicano."
+    },
+    {
+      "text": "Mira esa guagua, va llena de gente pa' la fiesta.",
+      "answer": "caribeno",
+      "hint": "Lambdacismo (L por R), sujeto ante infinitivo, uso de pronombre sujeto, queísmo.",
+      "feedback": "Caribeño (Cuba/PR/RD). Léxico: 'guagua' (autobús, igual que en Canarias). Fonética: Elisión de la preposición ('pa' la')."
+    }
   ]
 }
