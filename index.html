@@ -426,6 +426,73 @@
             margin-top: 8px;
         }
 
+        .quiz-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+            margin-top: 10px;
+        }
+
+        .quiz-header {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .quiz-question {
+            font-size: 1.05em;
+            color: #1a202c;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2d3748;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: #edf2f7;
+            transform: translateY(-1px);
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #f0fff4;
+            color: #22543d;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #fff5f5;
+            color: #742a2a;
+        }
+
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .quiz-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -449,6 +516,7 @@
                         <button class="btn" data-mode="challenge">Desafío</button>
                         <button class="btn" data-mode="phrase-challenge">Desafío: Frases</button>
                         <button class="btn" data-mode="identify">Identifica a esta persona</button>
+                        <button class="btn" data-mode="quiz">Quiz</button>
                     </div>
 
                     <div class="filter-controls" id="filterControls" style="display: none;">
@@ -592,6 +660,22 @@
                         </div>
                     </div>
                     <div id="phraseFeedback" class="feedback-box" style="display: none; margin-top: 12px;"></div>
+                </div>
+
+                <div id="quizPanel" style="display: none;">
+                    <h2 class="panel-title">QUIZ</h2>
+                    <div class="instruction">
+                        Responde las 40 preguntas de opción múltiple sobre el español y sus variedades. Las opciones cambian de orden en cada intento y las tarjetas no se repiten hasta agotar la baraja.
+                    </div>
+                    <div id="quizCard" class="quiz-card">
+                        <div id="quizHeader" class="quiz-header">Pulsa "Nueva pregunta" para comenzar.</div>
+                        <div id="quizQuestion" class="quiz-question"></div>
+                        <div id="quizOptions" class="quiz-options"></div>
+                        <div id="quizFeedback" class="feedback-box" style="display: none;"></div>
+                    </div>
+                    <div class="quiz-actions">
+                        <button id="quizNextBtn" class="check-btn" style="background: #667eea;">Nueva pregunta</button>
+                    </div>
                 </div>
             </div>
         </div>
