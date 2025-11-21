@@ -4,7 +4,6 @@
 
 let zoneData = {};
 let featureDescriptions = {};
-let textBank = []; // <--- NUEVO: Almacén para preguntas de texto
 let phraseChallenges = [];
 let map;
 let mapLayers = {};
@@ -105,11 +104,9 @@ async function loadData() {
         
         zoneData = rawData.zones;
         featureDescriptions = rawData.feature_descriptions;
-        textBank = rawData.text_bank_questions; // <--- NUEVO
         phraseChallenges = rawData.phrase_challenges || [];
 
         console.log('Linguistic data loaded:', Object.keys(zoneData).length, 'zones');
-        console.log('Text bank loaded:', textBank.length, 'questions'); // <--- NUEVO
         console.log('Phrase bank loaded:', phraseChallenges.length, 'phrases');
     } catch (error) {
         console.error('Error loading linguistic data:', error);
@@ -491,12 +488,7 @@ function generateQuestion() {
     document.getElementById('challengeInfo').innerHTML = '';
     document.getElementById('checkAnswerBtn').disabled = false;
 
-    // 50/50 chance to pick a feature question or a text question
-    if (Math.random() > 0.5) {
-        generateFeatureQuestion();
-    } else {
-        generateTextQuestion();
-    }
+    generateFeatureQuestion();
 }
 
 // --- (NUEVA FUNCIÓN INTERNA) ---
@@ -537,30 +529,6 @@ function generateFeatureQuestion() {
     document.getElementById('questionBox').innerHTML = questionHTML;
 }
 
-// --- (NUEVA FUNCIÓN INTERNA) ---
-function generateTextQuestion() {
-    if (textBank.length === 0) {
-        generateFeatureQuestion(); // Fallback if text bank is empty
-        return;
-    }
-    
-    const randomQuestion = textBank[Math.floor(Math.random() * textBank.length)];
-    
-    currentQuestion = {
-        type: 'text',
-        text: randomQuestion.text,
-        answerZone: randomQuestion.answer
-    };
-
-    const questionHTML = `
-        <div class="question-box">
-            <div class="question-text">¿A qué zona dialectal pertenece este texto?</div>
-            <div class="question-feature" style="font-family: monospace; font-size: 1.1em;">"${currentQuestion.text}"</div>
-        </div>
-    `;
-    document.getElementById('questionBox').innerHTML = questionHTML;
-}
-
 // --- (MODIFICADO) ---
 function handleChallengeClick(adminUnitID) {
     if (!currentQuestion) return;
@@ -571,7 +539,6 @@ function handleChallengeClick(adminUnitID) {
     const zoneKey = data.key;
 
     if (currentQuestion.type === 'feature') {
-        // --- Lógica de selección múltiple (como antes) ---
         if (selectedZones.has(zoneKey)) {
             selectedZones.delete(zoneKey);
             colorZone(zoneKey, 'neutral');
@@ -579,15 +546,6 @@ function handleChallengeClick(adminUnitID) {
             selectedZones.add(zoneKey);
             colorZone(zoneKey, 'selected');
         }
-    } else if (currentQuestion.type === 'text') {
-        // --- Lógica de selección única (NUEVO) ---
-        // Deselecciona todas las zonas primero
-        selectedZones.forEach(oldZoneKey => colorZone(oldZoneKey, 'neutral'));
-        selectedZones.clear();
-        
-        // Selecciona la nueva zona
-        selectedZones.add(zoneKey);
-        colorZone(zoneKey, 'selected');
     }
 
     displaySelectionInfo();
@@ -634,52 +592,33 @@ function checkAnswer() {
     let resultHTML = '';
     resetMapColors();
 
-    if (currentQuestion.type === 'feature') {
-        // --- Lógica de verificación de RASGO (como antes) ---
-        const correctZones = new Set(currentQuestion.correctZones);
-        const userZones = selectedZones;
-        const missedZones = new Set();
-        const wrongSelections = new Set();
+    // --- Lógica de verificación de RASGO (como antes) ---
+    const correctZones = new Set(currentQuestion.correctZones);
+    const userZones = selectedZones;
+    const missedZones = new Set();
+    const wrongSelections = new Set();
 
-        for (const zone of correctZones) {
-            if (!userZones.has(zone)) missedZones.add(zone);
-        }
-        for (const zone of userZones) {
-            if (!correctZones.has(zone)) wrongSelections.add(zone);
-        }
+    for (const zone of correctZones) {
+        if (!userZones.has(zone)) missedZones.add(zone);
+    }
+    for (const zone of userZones) {
+        if (!correctZones.has(zone)) wrongSelections.add(zone);
+    }
 
-        const isCorrect = wrongSelections.size === 0 && missedZones.size === 0;
+    const isCorrect = wrongSelections.size === 0 && missedZones.size === 0;
 
-        for (const zoneKey of correctZones) colorZone(zoneKey, 'correct');
-        for (const zoneKey of wrongSelections) colorZone(zoneKey, 'incorrect');
+    for (const zoneKey of correctZones) colorZone(zoneKey, 'correct');
+    for (const zoneKey of wrongSelections) colorZone(zoneKey, 'incorrect');
 
-        if (isCorrect) {
-            resultHTML = '<div class="result-message success">¡Correcto! Has identificado todas las zonas.</div>';
-        } else {
-            const correctNames = Array.from(correctZones).map(k => zoneData[k].nombre);
-            const wrongNames = Array.from(wrongSelections).map(k => zoneData[k].nombre);
-            resultHTML = '<div class="result-message error">Respuesta incorrecta</div>';
-            resultHTML += `<div class="info-section"><div class="info-label" style="color: #48bb78;">✓ Respuestas correctas:</div><div class="info-content">${correctNames.join(', ')}</div></div>`;
-            if (wrongNames.length > 0) {
-                resultHTML += `<div class="info-section"><div class="info-label" style="color: #f56565;">✗ Selecciones incorrectas:</div><div class="info-content">${wrongNames.join(', ')}</div></div>`;
-            }
-        }
-    } else if (currentQuestion.type === 'text') {
-        // --- Lógica de verificación de TEXTO (NUEVO) ---
-        const correctZone = currentQuestion.answerZone;
-        const userZone = selectedZones.values().next().value; // Obtener la única zona seleccionada
-        
-        const isCorrect = (userZone === correctZone);
-
-        if (isCorrect) {
-            colorZone(correctZone, 'correct');
-            resultHTML = '<div class="result-message success">¡Correcto!</div>';
-        } else {
-            colorZone(correctZone, 'correct'); // Muestra la correcta en verde
-            if (userZone) {
-                colorZone(userZone, 'incorrect'); // Muestra la incorrecta en rojo
-            }
-            resultHTML = `<div class="result-message error">Respuesta incorrecta. La zona correcta era: <strong>${zoneData[correctZone].nombre}</strong></div>`;
+    if (isCorrect) {
+        resultHTML = '<div class="result-message success">¡Correcto! Has identificado todas las zonas.</div>';
+    } else {
+        const correctNames = Array.from(correctZones).map(k => zoneData[k].nombre);
+        const wrongNames = Array.from(wrongSelections).map(k => zoneData[k].nombre);
+        resultHTML = '<div class="result-message error">Respuesta incorrecta</div>';
+        resultHTML += `<div class="info-section"><div class="info-label" style="color: #48bb78;">✓ Respuestas correctas:</div><div class="info-content">${correctNames.join(', ')}</div></div>`;
+        if (wrongNames.length > 0) {
+            resultHTML += `<div class="info-section"><div class="info-label" style="color: #f56565;">✗ Selecciones incorrectas:</div><div class="info-content">${wrongNames.join(', ')}</div></div>`;
         }
     }
 
