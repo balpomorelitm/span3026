@@ -5,6 +5,7 @@
 let zoneData = {};
 let featureDescriptions = {};
 let textBank = []; // <--- NUEVO: Almacén para preguntas de texto
+let phraseChallenges = [];
 let map;
 let mapLayers = {};
 let currentMode = 'exploration';
@@ -17,6 +18,8 @@ let identifyState = {
     currentVideo: null,
     guessed: false
 };
+
+let currentPhrase = null;
 
 const baseDialectColors = {
     'castellano-centro-norte': '#6b8afd',
@@ -68,6 +71,17 @@ const regionLabels = {
     'austral': 'Austral'
 };
 
+const phraseAnswerLabels = {
+    'castellano-centro-norte': 'España (Centro-Norte / Castellano)',
+    'andaluz': 'España (Andalucía)',
+    'canario': 'Islas Canarias (España)',
+    'mexico-centroamerica': 'México y Centroamérica',
+    'caribeno': 'Caribe (Cuba, Puerto Rico, República Dominicana)',
+    'andino': 'Zona Andina (Colombia, Perú, Bolivia, Ecuador)',
+    'chile': 'Chile',
+    'austral': 'Río de la Plata (Argentina, Uruguay)'
+};
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -75,6 +89,7 @@ const regionLabels = {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     buildReverseIndex();
+    populatePhraseOptions();
     initializeMap();
     setupEventListeners();
 });
@@ -91,9 +106,11 @@ async function loadData() {
         zoneData = rawData.zones;
         featureDescriptions = rawData.feature_descriptions;
         textBank = rawData.text_bank_questions; // <--- NUEVO
+        phraseChallenges = rawData.phrase_challenges || [];
 
         console.log('Linguistic data loaded:', Object.keys(zoneData).length, 'zones');
         console.log('Text bank loaded:', textBank.length, 'questions'); // <--- NUEVO
+        console.log('Phrase bank loaded:', phraseChallenges.length, 'phrases');
     } catch (error) {
         console.error('Error loading linguistic data:', error);
         alert('Error al cargar los datos lingüísticos. Por favor, recarga la página.');
@@ -671,7 +688,84 @@ function checkAnswer() {
 }
 
 // ============================================
-// MODE 4: IDENTIFY THE SPEAKER
+// MODE 4: PHRASE CHALLENGE
+// ============================================
+
+function populatePhraseOptions() {
+    const select = document.getElementById('phraseSelect');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">-- Selecciona una opción --</option>';
+    Object.entries(phraseAnswerLabels).forEach(([value, label]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        select.appendChild(option);
+    });
+}
+
+function loadNewPhraseChallenge() {
+    const phraseText = document.getElementById('phraseText');
+    const feedback = document.getElementById('phraseFeedback');
+    const hintBox = document.getElementById('phraseHint');
+    const select = document.getElementById('phraseSelect');
+    const checkBtn = document.getElementById('phraseCheckBtn');
+    const hintBtn = document.getElementById('phraseHintBtn');
+
+    feedback.style.display = 'none';
+    feedback.textContent = '';
+    feedback.className = 'feedback-box';
+    hintBox.style.display = 'none';
+    hintBox.textContent = '';
+
+    if (!phraseChallenges || phraseChallenges.length === 0) {
+        phraseText.textContent = 'No hay frases disponibles en este momento.';
+        feedback.style.display = 'block';
+        feedback.className = 'feedback-box feedback-error';
+        feedback.textContent = 'Revisa el archivo de datos para añadir frases.';
+        checkBtn.disabled = true;
+        hintBtn.disabled = true;
+        return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * phraseChallenges.length);
+    currentPhrase = phraseChallenges[randomIndex];
+    phraseText.textContent = currentPhrase.text;
+    select.value = '';
+    checkBtn.disabled = false;
+    hintBtn.disabled = false;
+}
+
+function revealPhraseHint() {
+    if (!currentPhrase) return;
+    const hintBox = document.getElementById('phraseHint');
+    hintBox.textContent = currentPhrase.hint;
+    hintBox.style.display = 'block';
+}
+
+function checkPhraseAnswer() {
+    if (!currentPhrase) return;
+
+    const select = document.getElementById('phraseSelect');
+    const feedback = document.getElementById('phraseFeedback');
+
+    if (!select.value) {
+        feedback.style.display = 'block';
+        feedback.className = 'feedback-box feedback-error';
+        feedback.textContent = 'Selecciona una opción antes de comprobar.';
+        return;
+    }
+
+    const isCorrect = select.value === currentPhrase.answer;
+    const verdict = isCorrect ? '¡Correcto!' : 'Respuesta incorrecta.';
+
+    feedback.style.display = 'block';
+    feedback.className = `feedback-box ${isCorrect ? 'feedback-success' : 'feedback-error'}`;
+    feedback.innerHTML = `${verdict} ${currentPhrase.feedback}`;
+}
+
+// ============================================
+// MODE 5: IDENTIFY THE SPEAKER
 // ============================================
 
 function shuffleDeck(deck) {
@@ -745,6 +839,9 @@ function setupEventListeners() {
     });
     document.getElementById('getQuestionBtn').addEventListener('click', generateQuestion);
     document.getElementById('checkAnswerBtn').addEventListener('click', checkAnswer);
+    document.getElementById('phraseHintBtn').addEventListener('click', revealPhraseHint);
+    document.getElementById('phraseNextBtn').addEventListener('click', loadNewPhraseChallenge);
+    document.getElementById('phraseCheckBtn').addEventListener('click', checkPhraseAnswer);
 
     document.getElementById('nextVideoBtn').addEventListener('click', () => {
         loadNextIdentifyVideo();
@@ -765,6 +862,7 @@ function switchMode(mode) {
     document.getElementById('explorationPanel').style.display = mode === 'exploration' ? 'block' : 'none';
     document.getElementById('filterPanel').style.display = mode === 'filter' ? 'block' : 'none';
     document.getElementById('challengePanel').style.display = mode === 'challenge' ? 'block' : 'none';
+    document.getElementById('phraseChallengePanel').style.display = mode === 'phrase-challenge' ? 'block' : 'none';
     document.getElementById('filterControls').style.display = mode === 'filter' ? 'flex' : 'none';
     document.getElementById('map').style.display = mode === 'identify' ? 'none' : 'block';
     document.getElementById('identifyGame').style.display = mode === 'identify' ? 'block' : 'none';
@@ -782,6 +880,10 @@ function switchMode(mode) {
         document.getElementById('questionBox').innerHTML = '<p style="color: #999;">Haz clic en "Generar Pregunta" para comenzar.</p>';
         document.getElementById('resultMessage').innerHTML = '';
         document.getElementById('challengeInfo').innerHTML = '';
+    } else if (mode === 'phrase-challenge') {
+        loadNewPhraseChallenge();
+        document.getElementById('phraseFeedback').style.display = 'none';
+        document.getElementById('phraseHint').style.display = 'none';
     } else if (mode === 'identify') {
         loadNextIdentifyVideo();
     }

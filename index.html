@@ -407,6 +407,25 @@
             border: 2px solid #f56565;
         }
 
+        .phrase-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .phrase-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        #phraseHint {
+            margin-top: 8px;
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -428,6 +447,7 @@
                         <button class="btn active" data-mode="exploration">Exploración</button>
                         <button class="btn" data-mode="filter">Filtrar</button>
                         <button class="btn" data-mode="challenge">Desafío</button>
+                        <button class="btn" data-mode="phrase-challenge">Desafío: Frases</button>
                         <button class="btn" data-mode="identify">Identifica a esta persona</button>
                     </div>
 
@@ -549,6 +569,30 @@
                     </button>
                     <div id="resultMessage"></div>
                     <div id="challengeInfo"></div>
+                </div>
+
+                <div id="phraseChallengePanel" style="display: none;">
+                    <h2 class="panel-title">Desafío: Frases de los grandes dialectos</h2>
+                    <div class="instruction">
+                        Lee la frase, pide una pista si la necesitas y elige el país o zona dialectal que crees que corresponde. Luego comprueba tu respuesta.
+                    </div>
+                    <div class="phrase-card">
+                        <div class="info-label">Frase</div>
+                        <div id="phraseText" class="info-content">Haz clic en "Nueva frase" para comenzar.</div>
+                    </div>
+                    <div class="phrase-actions">
+                        <button id="phraseHintBtn" class="btn">Pedir pista</button>
+                        <button id="phraseNextBtn" class="btn">Nueva frase</button>
+                    </div>
+                    <div id="phraseHint" class="instruction" style="display: none;"></div>
+                    <div class="info-section">
+                        <div class="info-label">¿De qué país o zona es?</div>
+                        <select id="phraseSelect">
+                            <option value="">-- Selecciona una opción --</option>
+                        </select>
+                    </div>
+                    <button id="phraseCheckBtn" class="check-btn" style="margin-top: 10px;">Comprobar</button>
+                    <div id="phraseFeedback" class="feedback-box" style="display: none; margin-top: 12px;"></div>
                 </div>
             </div>
         </div>
