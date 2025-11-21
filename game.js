@@ -11,6 +11,51 @@ let currentMode = 'exploration';
 let currentQuestion = null;
 let selectedZones = new Set();
 let adminUnitToZone = {}; // Reverse lookup cache
+let identifyState = {
+    deck: [],
+    used: [],
+    currentVideo: null,
+    guessed: false
+};
+
+const identifyVideos = [
+    'CR.mp4', 'PR.mp4', 'arg.mp4', 'boliv.mp4', 'chile.mp4', 'clombia.mp4', 'cuba.mp4',
+    'ecuad.mp4', 'esp.mp4', 'guat.mp4', 'hond.mp4', 'mex.mp4', 'nica.mp4', 'pan.mp4',
+    'peru.mp4', 'repdom.mp4', 'salv.mp4', 'urug.mp4', 'venez.mp4'
+];
+
+const countryToRegion = {
+    'arg': { name: 'Argentina', region: 'austral' },
+    'urug': { name: 'Uruguay', region: 'austral' },
+    'chile': { name: 'Chile', region: 'chile' },
+    'boliv': { name: 'Bolivia', region: 'andino' },
+    'peru': { name: 'Perú', region: 'andino' },
+    'ecuad': { name: 'Ecuador', region: 'andino' },
+    'clombia': { name: 'Colombia', region: 'andino' },
+    'mex': { name: 'México', region: 'mexico-centroamerica' },
+    'guat': { name: 'Guatemala', region: 'mexico-centroamerica' },
+    'hond': { name: 'Honduras', region: 'mexico-centroamerica' },
+    'nica': { name: 'Nicaragua', region: 'mexico-centroamerica' },
+    'salv': { name: 'El Salvador', region: 'mexico-centroamerica' },
+    'cr': { name: 'Costa Rica', region: 'mexico-centroamerica' },
+    'pan': { name: 'Panamá', region: 'mexico-centroamerica' },
+    'esp': { name: 'España', region: 'castellano-centro-norte' },
+    'cuba': { name: 'Cuba', region: 'caribeno' },
+    'pr': { name: 'Puerto Rico', region: 'caribeno' },
+    'repdom': { name: 'República Dominicana', region: 'caribeno' },
+    'venez': { name: 'Venezuela', region: 'caribeno' }
+};
+
+const regionLabels = {
+    'castellano-centro-norte': 'Castellano-Centro-Norte',
+    'andaluz': 'Andaluz',
+    'canario': 'Canario',
+    'mexico-centroamerica': 'México y Centroamérica',
+    'caribeno': 'Caribeño',
+    'andino': 'Andino',
+    'chile': 'Chile',
+    'austral': 'Austral'
+};
 
 // ============================================
 // INITIALIZATION
@@ -195,6 +240,8 @@ function handleMapClick(e, adminUnitID) {
             break;
         case 'challenge':
             handleChallengeClick(adminUnitID);
+            break;
+        case 'identify':
             break;
     }
 }
@@ -579,6 +626,68 @@ function checkAnswer() {
 }
 
 // ============================================
+// MODE 4: IDENTIFY THE SPEAKER
+// ============================================
+
+function shuffleDeck(deck) {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
+}
+
+function parseCountryData(filename) {
+    const key = filename.replace('.mp4', '').toLowerCase();
+    return countryToRegion[key];
+}
+
+function rebuildIdentifyDeck() {
+    identifyState.deck = shuffleDeck([...identifyVideos]);
+    identifyState.used = [];
+}
+
+function loadNextIdentifyVideo() {
+    if (identifyState.deck.length === 0) {
+        rebuildIdentifyDeck();
+    }
+
+    identifyState.currentVideo = identifyState.deck.pop();
+    identifyState.used.push(identifyState.currentVideo);
+    identifyState.guessed = false;
+
+    const videoElement = document.getElementById('dialectVideo');
+    videoElement.src = `public/${identifyState.currentVideo}`;
+    videoElement.load();
+
+    const feedback = document.getElementById('identifyFeedback');
+    feedback.style.display = 'none';
+    feedback.textContent = '';
+    feedback.className = 'feedback-box';
+}
+
+function handleDialectGuess(regionKey) {
+    if (!identifyState.currentVideo || identifyState.guessed) return;
+
+    const countryData = parseCountryData(identifyState.currentVideo);
+    const feedback = document.getElementById('identifyFeedback');
+
+    if (!countryData) {
+        feedback.textContent = 'No se pudo determinar el origen de este video.';
+        feedback.style.display = 'block';
+        feedback.className = 'feedback-box feedback-error';
+        return;
+    }
+
+    identifyState.guessed = true;
+    const isCorrect = countryData.region === regionKey;
+    feedback.style.display = 'block';
+    feedback.className = `feedback-box ${isCorrect ? 'feedback-success' : 'feedback-error'}`;
+    const verdict = isCorrect ? '¡Correcto!' : 'Incorrecto.';
+    feedback.innerHTML = `${verdict} Origen: <strong>${countryData.name}</strong>. Región dialectal: <strong>${regionLabels[countryData.region]}</strong>.`;
+}
+
+// ============================================
 // EVENT LISTENERS
 // ============================================
 
@@ -591,6 +700,14 @@ function setupEventListeners() {
     });
     document.getElementById('getQuestionBtn').addEventListener('click', generateQuestion);
     document.getElementById('checkAnswerBtn').addEventListener('click', checkAnswer);
+
+    document.getElementById('nextVideoBtn').addEventListener('click', () => {
+        loadNextIdentifyVideo();
+    });
+
+    document.querySelectorAll('.dialect-region').forEach(region => {
+        region.addEventListener('click', () => handleDialectGuess(region.dataset.region));
+    });
 }
 
 function switchMode(mode) {
@@ -604,6 +721,8 @@ function switchMode(mode) {
     document.getElementById('filterPanel').style.display = mode === 'filter' ? 'block' : 'none';
     document.getElementById('challengePanel').style.display = mode === 'challenge' ? 'block' : 'none';
     document.getElementById('filterControls').style.display = mode === 'filter' ? 'flex' : 'none';
+    document.getElementById('map').style.display = mode === 'identify' ? 'none' : 'block';
+    document.getElementById('identifyGame').style.display = mode === 'identify' ? 'block' : 'none';
 
     resetMapColors();
     selectedZones.clear();
@@ -618,5 +737,7 @@ function switchMode(mode) {
         document.getElementById('questionBox').innerHTML = '<p style="color: #999;">Haz clic en "Generar Pregunta" para comenzar.</p>';
         document.getElementById('resultMessage').innerHTML = '';
         document.getElementById('challengeInfo').innerHTML = '';
+    } else if (mode === 'identify') {
+        loadNextIdentifyVideo();
     }
 }

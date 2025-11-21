@@ -133,6 +133,93 @@
             height: fit-content;
         }
 
+        .identify-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .identify-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .identify-card h3 {
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .dialect-video {
+            width: 100%;
+            border-radius: 6px;
+            background: #000;
+            max-height: 360px;
+        }
+
+        .dialect-map-wrapper {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .dialect-map {
+            width: 100%;
+        }
+
+        .dialect-region:hover {
+            opacity: 0.85;
+            cursor: pointer;
+        }
+
+        .feedback-box {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .feedback-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+        }
+
+        .feedback-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .legend-pair {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f7fafc;
+            border-radius: 6px;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
         .panel-title {
             font-size: 1.3em;
             color: #667eea;
@@ -341,6 +428,7 @@
                         <button class="btn active" data-mode="exploration">Exploración</button>
                         <button class="btn" data-mode="filter">Filtrar</button>
                         <button class="btn" data-mode="challenge">Desafío</button>
+                        <button class="btn" data-mode="identify">Identifica a esta persona</button>
                     </div>
 
                     <div class="filter-controls" id="filterControls" style="display: none;">
@@ -368,6 +456,51 @@
                 </div>
 
                 <div id="map"></div>
+                <div id="identifyGame" style="display: none; margin-top: 15px;">
+                    <div class="identify-grid">
+                        <div class="identify-card">
+                            <h3>Identifica a esta persona</h3>
+                            <p class="instruction">Reproduce el video y selecciona la región dialectal que creas correcta.</p>
+                            <video id="dialectVideo" class="dialect-video" controls></video>
+                            <div id="identifyFeedback" class="feedback-box" style="display: none;"></div>
+                            <button id="nextVideoBtn" class="check-btn" style="margin-top: 10px; background: #667eea;">Siguiente video</button>
+                        </div>
+                        <div class="identify-card">
+                            <h3>Mapa de dialectos</h3>
+                            <p class="instruction">Haz clic en una región para adivinar el dialecto.</p>
+                            <div class="dialect-map-wrapper">
+                                <svg id="dialectMap" class="dialect-map" viewBox="0 0 800 500">
+                                    <rect class="dialect-region" data-region="castellano-centro-norte" x="60" y="80" width="150" height="120" fill="#6b8afd" rx="8" />
+                                    <rect class="dialect-region" data-region="andaluz" x="60" y="220" width="150" height="120" fill="#f472b6" rx="8" />
+                                    <rect class="dialect-region" data-region="canario" x="60" y="360" width="150" height="80" fill="#f6ad55" rx="8" />
+                                    <rect class="dialect-region" data-region="mexico-centroamerica" x="240" y="80" width="220" height="160" fill="#34d399" rx="10" />
+                                    <rect class="dialect-region" data-region="caribeno" x="240" y="260" width="220" height="180" fill="#facc15" rx="10" />
+                                    <rect class="dialect-region" data-region="andino" x="490" y="80" width="120" height="180" fill="#60a5fa" rx="10" />
+                                    <rect class="dialect-region" data-region="chile" x="630" y="80" width="120" height="150" fill="#fb7185" rx="10" />
+                                    <rect class="dialect-region" data-region="austral" x="490" y="280" width="260" height="160" fill="#a78bfa" rx="12" />
+                                    <text x="135" y="150" text-anchor="middle" fill="#1a202c" font-weight="700">Castellano Centro-Norte</text>
+                                    <text x="135" y="290" text-anchor="middle" fill="#1a202c" font-weight="700">Andaluz</text>
+                                    <text x="135" y="410" text-anchor="middle" fill="#1a202c" font-weight="700">Canario</text>
+                                    <text x="350" y="165" text-anchor="middle" fill="#1a202c" font-weight="700">México y Centroamérica</text>
+                                    <text x="350" y="360" text-anchor="middle" fill="#1a202c" font-weight="700">Caribeño</text>
+                                    <text x="550" y="170" text-anchor="middle" fill="#1a202c" font-weight="700">Andino</text>
+                                    <text x="690" y="150" text-anchor="middle" fill="#1a202c" font-weight="700">Chile</text>
+                                    <text x="620" y="360" text-anchor="middle" fill="#1a202c" font-weight="700">Austral</text>
+                                </svg>
+                            </div>
+                            <div class="legend-grid">
+                                <div class="legend-pair"><span class="legend-dot" style="background: #6b8afd;"></span><span>Castellano-Centro-Norte</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #f472b6;"></span><span>Andaluz</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #f6ad55;"></span><span>Canario</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #34d399;"></span><span>México y Centroamérica</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #facc15;"></span><span>Caribeño</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #60a5fa;"></span><span>Andino</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #fb7185;"></span><span>Chile</span></div>
+                                <div class="legend-pair"><span class="legend-dot" style="background: #a78bfa;"></span><span>Austral</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="info-panel">
