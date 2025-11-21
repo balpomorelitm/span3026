@@ -18,6 +18,17 @@ let identifyState = {
     guessed: false
 };
 
+const baseDialectColors = {
+    'castellano-centro-norte': '#6b8afd',
+    'andaluz': '#f472b6',
+    'canario': '#f6ad55',
+    'mexico-centroamerica': '#34d399',
+    'caribeno': '#facc15',
+    'andino': '#60a5fa',
+    'chile': '#fb7185',
+    'austral': '#a78bfa'
+};
+
 const identifyVideos = [
     'CR.mp4', 'PR.mp4', 'arg.mp4', 'boliv.mp4', 'chile.mp4', 'clombia.mp4', 'cuba.mp4',
     'ecuad.mp4', 'esp.mp4', 'guat.mp4', 'hond.mp4', 'mex.mp4', 'nica.mp4', 'pan.mp4',
@@ -63,9 +74,9 @@ const regionLabels = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
+    buildReverseIndex();
     initializeMap();
     setupEventListeners();
-    buildReverseIndex();
 });
 
 // ============================================
@@ -100,6 +111,39 @@ function buildReverseIndex() {
         }
     }
     console.log('Reverse index built:', Object.keys(adminUnitToZone).length, 'admin units');
+}
+
+function getMainDialectZone(adminUnitID) {
+    const zoneKey = adminUnitToZone[adminUnitID];
+    if (!zoneKey) return null;
+
+    if (zoneKey === 'sur_espana') {
+        return adminUnitID === 'ES-CN' ? 'canario' : 'andaluz';
+    }
+
+    const mainZones = {
+        'norte_espana': 'castellano-centro-norte',
+        'mexico_ca': 'mexico-centroamerica',
+        'caribe': 'caribeno',
+        'caribe_colombia': 'caribeno',
+        'caribe_venezuela': 'caribeno',
+        'andino': 'andino',
+        'austral': 'austral',
+        'chile': 'chile'
+    };
+
+    return mainZones[zoneKey] || null;
+}
+
+function getBaseColorForAdminUnit(adminUnitID) {
+    const mainZone = getMainDialectZone(adminUnitID);
+    if (!mainZone) return '#e0e0e0';
+    return baseDialectColors[mainZone] || '#e0e0e0';
+}
+
+function getBaseStyleForAdminUnit(adminUnitID) {
+    const fillColor = getBaseColorForAdminUnit(adminUnitID);
+    return { fillColor, fillOpacity: 0.6, color: '#666', weight: 1 };
 }
 
 function getZoneData(adminUnitID) {
@@ -148,12 +192,7 @@ async function loadGeoJSONData() {
 
             if (iso2) {
                 const layer = L.geoJSON(feature, {
-                    style: {
-                        fillColor: '#e0e0e0',
-                        fillOpacity: 0.6,
-                        color: '#666',
-                        weight: 1
-                    },
+                    style: getBaseStyleForAdminUnit(iso2),
                     onEachFeature: (feature, layer) => {
                         layer.adminUnitID = iso2;
                         layer.on({
@@ -196,7 +235,8 @@ function addSpanishRegions() {
             { code: 'ES-CN', name: 'Canarias', coords: [28.3, -16.5] }
         ];
         regions.forEach(region => {
-            const marker = L.circleMarker(region.coords, { pane: 'spanishRegions', radius: 8, fillColor: '#e0e0e0', fillOpacity: 0.8, color: '#666', weight: 2 }).addTo(map);
+            const baseStyle = getBaseStyleForAdminUnit(region.code);
+            const marker = L.circleMarker(region.coords, { pane: 'spanishRegions', radius: 8, ...baseStyle, fillOpacity: 0.8, weight: 2 }).addTo(map);
             marker.adminUnitID = region.code;
             marker.bindTooltip(region.name);
             marker.on('click', (e) => handleMapClick(e, region.code));
@@ -217,7 +257,8 @@ function addCaribbeanCoastalZones() {
         { code: 'VE-CAR', name: 'Litoral Caribe de Venezuela', coords: [10.4, -66.8] }
     ];
     coastalZones.forEach(zone => {
-        const marker = L.circleMarker(zone.coords, { pane: 'caribbeanZones', radius: 8, fillColor: '#e0e0e0', fillOpacity: 0.8, color: '#666', weight: 2 }).addTo(map);
+        const baseStyle = getBaseStyleForAdminUnit(zone.code);
+        const marker = L.circleMarker(zone.coords, { pane: 'caribbeanZones', radius: 8, ...baseStyle, fillOpacity: 0.8, weight: 2 }).addTo(map);
         marker.adminUnitID = zone.code;
         marker.bindTooltip(zone.name);
         marker.on('click', (e) => handleMapClick(e, zone.code));
@@ -411,9 +452,12 @@ function applyFilter(featureKey) {
 }
 
 function resetMapColors() {
-    for (const layer of Object.values(mapLayers)) {
+    for (const [adminUnitID, layer] of Object.entries(mapLayers)) {
         if (layer.setStyle) {
-            layer.setStyle({ fillColor: '#e0e0e0', fillOpacity: 0.6, color: '#666', weight: 1 });
+            const neutralStyle = currentMode === 'exploration'
+                ? getBaseStyleForAdminUnit(adminUnitID)
+                : { fillColor: '#e0e0e0', fillOpacity: 0.6, color: '#666', weight: 1 };
+            layer.setStyle(neutralStyle);
         }
     }
 }
@@ -534,18 +578,19 @@ function handleChallengeClick(adminUnitID) {
 
 // --- (NUEVA FUNCIÓN AUXILIAR) ---
 function colorZone(zoneKey, style) {
-    const zoneStyles = {
-        neutral: { fillColor: '#e0e0e0', fillOpacity: 0.6, color: '#666', weight: 1 },
-        selected: { fillColor: '#667eea', fillOpacity: 0.7, color: '#333', weight: 2 },
-        correct: { fillColor: '#48bb78', fillOpacity: 0.7, color: '#2f855a', weight: 2 },
-        incorrect: { fillColor: '#f56565', fillOpacity: 0.7, color: '#c53030', weight: 2 }
-    };
-    
     const data = zoneData[zoneKey];
     if (data) {
         for (const adminUnit of data.admin_units) {
             const layer = mapLayers[adminUnit];
             if (layer && layer.setStyle) {
+                const zoneStyles = {
+                    neutral: currentMode === 'exploration'
+                        ? getBaseStyleForAdminUnit(adminUnit)
+                        : { fillColor: '#e0e0e0', fillOpacity: 0.6, color: '#666', weight: 1 },
+                    selected: { fillColor: '#667eea', fillOpacity: 0.7, color: '#333', weight: 2 },
+                    correct: { fillColor: '#48bb78', fillOpacity: 0.7, color: '#2f855a', weight: 2 },
+                    incorrect: { fillColor: '#f56565', fillOpacity: 0.7, color: '#c53030', weight: 2 }
+                };
                 layer.setStyle(zoneStyles[style]);
             }
         }
