@@ -20,6 +20,20 @@ let identifyState = {
 
 let currentPhrase = null;
 
+const adminUnitLabels = {
+    'AR': 'Argentina', 'UY': 'Uruguay', 'PY': 'Paraguay',
+    'BO': 'Bolivia', 'PE': 'Perú', 'EC': 'Ecuador', 'CO': 'Colombia', 'VE': 'Venezuela',
+    'VE-CAR': 'Litoral Caribe de Venezuela', 'CO-CAR': 'Costa Caribe de Colombia',
+    'CL': 'Chile', 'MX': 'México', 'GT': 'Guatemala', 'SV': 'El Salvador', 'HN': 'Honduras',
+    'NI': 'Nicaragua', 'CR': 'Costa Rica', 'PA': 'Panamá', 'CU': 'Cuba', 'DO': 'República Dominicana',
+    'PR': 'Puerto Rico', 'ES': 'España', 'ES-GA': 'Galicia', 'ES-AS': 'Asturias', 'ES-CB': 'Cantabria',
+    'ES-PV': 'País Vasco', 'ES-NC': 'Navarra', 'ES-RI': 'La Rioja', 'ES-CL': 'Castilla y León',
+    'ES-MD': 'Madrid', 'ES-CM': 'Castilla-La Mancha', 'ES-AR': 'Aragón', 'ES-CT': 'Cataluña',
+    'ES-VC': 'Comunidad Valenciana', 'ES-AN': 'Andalucía', 'ES-EX': 'Extremadura', 'ES-MC': 'Murcia',
+    'ES-CN': 'Canarias', 'ES-IB': 'Islas Baleares', 'ES-CE': 'Ceuta', 'ES-ML': 'Melilla',
+    'GQ': 'Guinea Ecuatorial', 'PH': 'Filipinas'
+};
+
 const baseDialectColors = {
     'castellano-centro-norte': '#6b8afd',
     'andaluz': '#f472b6',
@@ -169,6 +183,29 @@ function getZoneData(adminUnitID) {
         };
     }
     return null;
+}
+
+function getAdminLabel(adminUnitID) {
+    return adminUnitLabels[adminUnitID] || adminUnitID;
+}
+
+function getFeatureValueForAdminUnit(adminUnitID, featureKey) {
+    const zoneKey = adminUnitToZone[adminUnitID];
+    if (!zoneKey) return { value: null, zoneKey: null, isOverride: false, baseValue: null };
+
+    const zone = zoneData[zoneKey];
+    const baseValue = zone?.features?.[featureKey];
+    const overrideExists = zone?.admin_overrides?.[adminUnitID]?.hasOwnProperty(featureKey);
+    const value = overrideExists ? zone.admin_overrides[adminUnitID][featureKey] : baseValue;
+
+    return { value, zoneKey, isOverride: overrideExists, baseValue };
+}
+
+function getFeatureValueLabel(value) {
+    if (value === 1) return 'presente';
+    if (value === 0) return 'ausente';
+    if (value === 2) return 'variable';
+    return 'sin datos';
 }
 
 // ============================================
@@ -381,6 +418,23 @@ function displayZoneInfo(data) {
         `;
     }
 
+    let overridesHTML = '';
+    if (data.admin_overrides && Object.keys(data.admin_overrides).length > 0) {
+        const overrideRows = Object.entries(data.admin_overrides).map(([adminUnitID, overrides]) => {
+            const overrideText = Object.entries(overrides)
+                .map(([key, value]) => `${featureLabels[key] || key}: ${getFeatureValueLabel(value)}`)
+                .join('; ');
+            return `<p><strong>${getAdminLabel(adminUnitID)}</strong>: ${overrideText}</p>`;
+        }).join('');
+
+        overridesHTML = `
+            <div class="info-section">
+                <div class="info-label">Diferencias por país</div>
+                <div class="info-content rich-text">${overrideRows}</div>
+            </div>
+        `;
+    }
+
     const html = `
         <div class="zone-name">${data.nombre}</div>
         ${descriptionHTML}
@@ -394,6 +448,7 @@ function displayZoneInfo(data) {
             <div class="info-label">Sustrato Lingüístico</div>
             <div class="info-content">${data.sustrato || 'No especificado'}</div>
         </div>
+        ${overridesHTML}
         ${data.adstrato ? `
             <div class="info-section">
                 <div class="info-label">Adstrato</div>
@@ -429,26 +484,30 @@ function applyFilter(featureKey) {
         `;
     }
 
-    let presentZones = [], absentZones = [], variableZones = [];
-    for (const [zoneKey, data] of Object.entries(zoneData)) {
-        const featureValue = data.features[featureKey];
+    const presentZones = [], absentZones = [], variableZones = [], overrideNotes = [];
+
+    for (const [adminUnitID, layer] of Object.entries(mapLayers)) {
+        const { value, zoneKey, isOverride, baseValue } = getFeatureValueForAdminUnit(adminUnitID, featureKey);
+        if (value === null || value === undefined || !zoneKey) continue;
+
         let color;
-        if (featureValue === 1) {
+        if (value === 1) {
             color = '#48bb78';
-            presentZones.push(data.nombre);
-        } else if (featureValue === 0) {
+            presentZones.push(`${getAdminLabel(adminUnitID)} (${zoneData[zoneKey].nombre})`);
+        } else if (value === 0) {
             color = '#f56565';
-            absentZones.push(data.nombre);
-        } else if (featureValue === 2) {
+            absentZones.push(`${getAdminLabel(adminUnitID)} (${zoneData[zoneKey].nombre})`);
+        } else if (value === 2) {
             color = '#ecc94b';
-            variableZones.push(data.nombre);
+            variableZones.push(`${getAdminLabel(adminUnitID)} (${zoneData[zoneKey].nombre})`);
         }
 
-        for (const adminUnit of data.admin_units) {
-            const layer = mapLayers[adminUnit];
-            if (layer && layer.setStyle) {
-                layer.setStyle({ fillColor: color, fillOpacity: 0.7, color: '#333', weight: 1 });
-            }
+        if (layer && layer.setStyle) {
+            layer.setStyle({ fillColor: color, fillOpacity: 0.7, color: '#333', weight: 1 });
+        }
+
+        if (isOverride && baseValue !== value) {
+            overrideNotes.push(`${getAdminLabel(adminUnitID)} ajustado a ${getFeatureValueLabel(value)} (base: ${getFeatureValueLabel(baseValue)}) en ${zoneData[zoneKey].nombre}`);
         }
     }
 
@@ -461,6 +520,9 @@ function applyFilter(featureKey) {
     }
     if (absentZones.length > 0) {
         statsHTML += `<div class="info-section"><div class="info-label" style="color: #f56565;">✗ Ausente en:</div><div class="info-content">${absentZones.join(', ')}</div></div>`;
+    }
+    if (overrideNotes.length > 0) {
+        statsHTML += `<div class="info-section"><div class="info-label" style="color: #667eea;">Ajustes por país:</div><div class="info-content">${overrideNotes.join(' · ')}</div></div>`;
     }
     document.getElementById('filterInfo').innerHTML = descriptionHTML + statsHTML;
 }
