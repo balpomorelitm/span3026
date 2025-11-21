@@ -574,7 +574,7 @@
                 <div id="phraseChallengePanel" style="display: none;">
                     <h2 class="panel-title">Desafío: Frases de los grandes dialectos</h2>
                     <div class="instruction">
-                        Lee la frase, pide una pista si la necesitas y elige el país o zona dialectal que crees que corresponde. Luego comprueba tu respuesta.
+                        Lee la frase, pide una pista si la necesitas y responde haciendo clic en la zona dialectal correcta directamente en el mapa de la izquierda.
                     </div>
                     <div class="phrase-card">
                         <div class="info-label">Frase</div>
@@ -586,12 +586,11 @@
                     </div>
                     <div id="phraseHint" class="instruction" style="display: none;"></div>
                     <div class="info-section">
-                        <div class="info-label">¿De qué país o zona es?</div>
-                        <select id="phraseSelect">
-                            <option value="">-- Selecciona una opción --</option>
-                        </select>
+                        <div class="info-label">Selecciona la zona en el mapa</div>
+                        <div id="phraseSelectionInfo" class="info-content">
+                            Usa el mapa de la izquierda: al hacer clic se marcará tu selección y sabrás si es correcta.
+                        </div>
                     </div>
-                    <button id="phraseCheckBtn" class="check-btn" style="margin-top: 10px;">Comprobar</button>
                     <div id="phraseFeedback" class="feedback-box" style="display: none; margin-top: 12px;"></div>
                 </div>
             </div>

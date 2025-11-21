@@ -19,6 +19,7 @@ let identifyState = {
 };
 
 let currentPhrase = null;
+let phraseSolved = false;
 
 const adminUnitLabels = {
     'AR': 'Argentina', 'UY': 'Uruguay', 'PY': 'Paraguay',
@@ -102,7 +103,6 @@ const phraseAnswerLabels = {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     buildReverseIndex();
-    populatePhraseOptions();
     initializeMap();
     setupEventListeners();
 });
@@ -330,6 +330,9 @@ function handleMapClick(e, adminUnitID) {
         case 'filter':
             handleExplorationClick(adminUnitID);
             break;
+        case 'phrase-challenge':
+            handlePhraseMapClick(adminUnitID);
+            break;
         case 'challenge':
             handleChallengeClick(adminUnitID);
             break;
@@ -530,7 +533,8 @@ function applyFilter(featureKey) {
 function resetMapColors() {
     for (const [adminUnitID, layer] of Object.entries(mapLayers)) {
         if (layer.setStyle) {
-            const neutralStyle = currentMode === 'exploration'
+            const useBaseColors = currentMode === 'exploration' || currentMode === 'phrase-challenge';
+            const neutralStyle = useBaseColors
                 ? getBaseStyleForAdminUnit(adminUnitID)
                 : { fillColor: '#e0e0e0', fillOpacity: 0.6, color: '#666', weight: 1 };
             layer.setStyle(neutralStyle);
@@ -689,42 +693,33 @@ function checkAnswer() {
 }
 
 // ============================================
-// MODE 4: PHRASE CHALLENGE
+// MODE 4: PHRASE CHALLENGE (MAP-BASED)
 // ============================================
-
-function populatePhraseOptions() {
-    const select = document.getElementById('phraseSelect');
-    if (!select) return;
-
-    select.innerHTML = '<option value="">-- Selecciona una opción --</option>';
-    Object.entries(phraseAnswerLabels).forEach(([value, label]) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = label;
-        select.appendChild(option);
-    });
-}
 
 function loadNewPhraseChallenge() {
     const phraseText = document.getElementById('phraseText');
     const feedback = document.getElementById('phraseFeedback');
     const hintBox = document.getElementById('phraseHint');
-    const select = document.getElementById('phraseSelect');
-    const checkBtn = document.getElementById('phraseCheckBtn');
     const hintBtn = document.getElementById('phraseHintBtn');
+    const selectionInfo = document.getElementById('phraseSelectionInfo');
+
+    phraseSolved = false;
+    currentPhrase = null;
 
     feedback.style.display = 'none';
     feedback.textContent = '';
     feedback.className = 'feedback-box';
     hintBox.style.display = 'none';
     hintBox.textContent = '';
+    if (selectionInfo) {
+        selectionInfo.textContent = 'Usa el mapa de la izquierda: al hacer clic se marcará tu selección y sabrás si es correcta.';
+    }
 
     if (!phraseChallenges || phraseChallenges.length === 0) {
         phraseText.textContent = 'No hay frases disponibles en este momento.';
         feedback.style.display = 'block';
         feedback.className = 'feedback-box feedback-error';
         feedback.textContent = 'Revisa el archivo de datos para añadir frases.';
-        checkBtn.disabled = true;
         hintBtn.disabled = true;
         return;
     }
@@ -732,9 +727,11 @@ function loadNewPhraseChallenge() {
     const randomIndex = Math.floor(Math.random() * phraseChallenges.length);
     currentPhrase = phraseChallenges[randomIndex];
     phraseText.textContent = currentPhrase.text;
-    select.value = '';
-    checkBtn.disabled = false;
     hintBtn.disabled = false;
+
+    if (currentMode === 'phrase-challenge') {
+        resetMapColors();
+    }
 }
 
 function revealPhraseHint() {
@@ -744,25 +741,62 @@ function revealPhraseHint() {
     hintBox.style.display = 'block';
 }
 
-function checkPhraseAnswer() {
-    if (!currentPhrase) return;
+function handlePhraseMapClick(adminUnitID) {
+    if (currentMode !== 'phrase-challenge' || !currentPhrase) return;
 
-    const select = document.getElementById('phraseSelect');
     const feedback = document.getElementById('phraseFeedback');
+    const selectionInfo = document.getElementById('phraseSelectionInfo');
+    if (phraseSolved) {
+        feedback.style.display = 'block';
+        feedback.className = 'feedback-box feedback-success';
+        feedback.textContent = 'Ya acertaste esta frase. Pulsa "Nueva frase" para seguir jugando.';
+        return;
+    }
+    const regionKey = getMainDialectZone(adminUnitID);
 
-    if (!select.value) {
+    if (!regionKey) {
         feedback.style.display = 'block';
         feedback.className = 'feedback-box feedback-error';
-        feedback.textContent = 'Selecciona una opción antes de comprobar.';
+        feedback.textContent = 'Esta zona no forma parte de las regiones dialectales del desafío. Prueba con otra.';
         return;
     }
 
-    const isCorrect = select.value === currentPhrase.answer;
+    highlightPhraseSelection(adminUnitID);
+
+    const regionLabel = phraseAnswerLabels[regionKey] || regionLabels[regionKey] || getAdminLabel(adminUnitID);
+    if (selectionInfo) {
+        selectionInfo.textContent = `Seleccionaste: ${regionLabel}`;
+    }
+
+    const isCorrect = regionKey === currentPhrase.answer;
+    phraseSolved = isCorrect;
+
     const verdict = isCorrect ? '¡Correcto!' : 'Respuesta incorrecta.';
+    const detail = isCorrect
+        ? currentPhrase.feedback
+        : 'Sigue probando y haz clic en otra zona dialectal del mapa.';
 
     feedback.style.display = 'block';
     feedback.className = `feedback-box ${isCorrect ? 'feedback-success' : 'feedback-error'}`;
-    feedback.innerHTML = `${verdict} ${currentPhrase.feedback}`;
+    feedback.innerHTML = `${verdict} ${detail}`;
+}
+
+function highlightPhraseSelection(adminUnitID) {
+    const layer = mapLayers[adminUnitID];
+    if (!layer || !layer.setStyle) return;
+
+    resetMapColors();
+
+    layer.setStyle({
+        fillColor: '#2b6cb0',
+        fillOpacity: 0.85,
+        color: '#2c5282',
+        weight: 2
+    });
+
+    if (layer._hoverStyleBackup) {
+        layer._hoverStyleBackup = null;
+    }
 }
 
 // ============================================
@@ -842,7 +876,6 @@ function setupEventListeners() {
     document.getElementById('checkAnswerBtn').addEventListener('click', checkAnswer);
     document.getElementById('phraseHintBtn').addEventListener('click', revealPhraseHint);
     document.getElementById('phraseNextBtn').addEventListener('click', loadNewPhraseChallenge);
-    document.getElementById('phraseCheckBtn').addEventListener('click', checkPhraseAnswer);
 
     document.getElementById('nextVideoBtn').addEventListener('click', () => {
         loadNextIdentifyVideo();
